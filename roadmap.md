@@ -1,5 +1,8 @@
 # Roadmap — Plateforme fabricants & vendeurs (Mali)
 
+## Identité officielle
+- [ ] Utiliser exactement « ANW KA SUKU » dans le logo, les titres, la navigation, l'authentification et les trois espaces
+
 ## Sprint 0 — Fondations
 - [ ] Direction artistique (vert profond / orange-or / blanc / noir tech) dans src/styles.css
 - [ ] Page d'accueil publique (hero, recherche, catégories, produits, boutiques)
