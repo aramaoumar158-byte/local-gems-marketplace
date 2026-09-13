@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { AdminPage } from "@/components/role-pages";
+import { requireRole } from "@/lib/auth-guard";
+export const Route = createFileRoute("/admin")({ ssr: false, beforeLoad: () => requireRole("admin"), head: () => ({ meta: [{ title: "Super Admin — ANW KA SUKU" }, { name: "description", content: "Administration sécurisée de la plateforme ANW KA SUKU." }, { property: "og:title", content: "Super Admin — ANW KA SUKU" }, { property: "og:description", content: "Administration privée ANW KA SUKU." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: () => <AdminPage /> });

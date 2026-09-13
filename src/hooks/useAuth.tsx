@@ -24,7 +24,7 @@ type AuthValue = {
   signUp: (input: {
     fullName: string;
     phone: string;
-    email?: string;
+    email?: string | undefined;
     password: string;
     role: "client" | "seller";
   }) => Promise<{ error: string | null }>;
