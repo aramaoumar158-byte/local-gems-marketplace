@@ -10,11 +10,22 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ClientRouteImport } from './routes/client'
+import { Route as SellerRouteImport } from './routes/seller'
+import { Route as AdminSplatRouteImport } from './routes/admin.$'
+import { Route as ClientSplatRouteImport } from './routes/client.$'
+import { Route as SellerSplatRouteImport } from './routes/seller.$'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -22,31 +33,102 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ClientRoute = ClientRouteImport.update({
+  id: '/client',
+  path: '/client',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellerRoute = SellerRouteImport.update({
+  id: '/seller',
+  path: '/seller',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSplatRoute = AdminSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => AdminRoute,
+} as any)
+const ClientSplatRoute = ClientSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => ClientRoute,
+} as any)
+const SellerSplatRoute = SellerSplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => SellerRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/client': typeof ClientRouteWithChildren
+  '/seller': typeof SellerRouteWithChildren
+  '/admin/$': typeof AdminSplatRoute
+  '/client/$': typeof ClientSplatRoute
+  '/seller/$': typeof SellerSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/client': typeof ClientRouteWithChildren
+  '/seller': typeof SellerRouteWithChildren
+  '/admin/$': typeof AdminSplatRoute
+  '/client/$': typeof ClientSplatRoute
+  '/seller/$': typeof SellerSplatRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
+  '/client': typeof ClientRouteWithChildren
+  '/seller': typeof SellerRouteWithChildren
+  '/admin/$': typeof AdminSplatRoute
+  '/client/$': typeof ClientSplatRoute
+  '/seller/$': typeof SellerSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth'
+  fullPaths:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/client'
+    | '/seller'
+    | '/admin/$'
+    | '/client/$'
+    | '/seller/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth'
-  id: '__root__' | '/' | '/auth'
+  to:
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/client'
+    | '/seller'
+    | '/admin/$'
+    | '/client/$'
+    | '/seller/$'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin'
+    | '/auth'
+    | '/client'
+    | '/seller'
+    | '/admin/$'
+    | '/client/$'
+    | '/seller/$'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ClientRoute: typeof ClientRouteWithChildren
+  SellerRoute: typeof SellerRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -58,6 +140,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
@@ -65,12 +154,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/client': {
+      id: '/client'
+      path: '/client'
+      fullPath: '/client'
+      preLoaderRoute: typeof ClientRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/seller': {
+      id: '/seller'
+      path: '/seller'
+      fullPath: '/seller'
+      preLoaderRoute: typeof SellerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/$': {
+      id: '/admin/$'
+      path: '/$'
+      fullPath: '/admin/$'
+      preLoaderRoute: typeof AdminSplatRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/client/$': {
+      id: '/client/$'
+      path: '/$'
+      fullPath: '/client/$'
+      preLoaderRoute: typeof ClientSplatRouteImport
+      parentRoute: typeof ClientRoute
+    }
+    '/seller/$': {
+      id: '/seller/$'
+      path: '/$'
+      fullPath: '/seller/$'
+      preLoaderRoute: typeof SellerSplatRouteImport
+      parentRoute: typeof SellerRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminSplatRoute: typeof AdminSplatRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminSplatRoute: AdminSplatRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ClientRouteChildren {
+  ClientSplatRoute: typeof ClientSplatRoute
+}
+
+const ClientRouteChildren: ClientRouteChildren = {
+  ClientSplatRoute: ClientSplatRoute,
+}
+
+const ClientRouteWithChildren =
+  ClientRoute._addFileChildren(ClientRouteChildren)
+
+interface SellerRouteChildren {
+  SellerSplatRoute: typeof SellerSplatRoute
+}
+
+const SellerRouteChildren: SellerRouteChildren = {
+  SellerSplatRoute: SellerSplatRoute,
+}
+
+const SellerRouteWithChildren =
+  SellerRoute._addFileChildren(SellerRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
+  ClientRoute: ClientRouteWithChildren,
+  SellerRoute: SellerRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
