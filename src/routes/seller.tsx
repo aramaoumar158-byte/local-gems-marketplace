@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { SellerPage } from "@/components/role-pages";
+import { requireRole } from "@/lib/auth-guard";
+export const Route = createFileRoute("/seller")({ ssr: false, beforeLoad: () => requireRole("seller"), head: () => ({ meta: [{ title: "Espace Fabricant — ANW KA SUKU" }, { name: "description", content: "Gérez votre boutique et vos ventes sur ANW KA SUKU." }, { property: "og:title", content: "Espace Fabricant — ANW KA SUKU" }, { property: "og:description", content: "Le tableau de bord professionnel des fabricants et vendeurs." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: () => <SellerPage /> });
