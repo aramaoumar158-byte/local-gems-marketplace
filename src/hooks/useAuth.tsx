@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { phoneToLogin } from "@/lib/format";
+import { normalizePhone, phoneToLogin } from "@/lib/format";
 
 export type AppRole = "client" | "seller" | "admin";
 
@@ -13,6 +13,8 @@ export type Profile = {
   city: string | null;
   avatar_url: string | null;
   status: string;
+  phone_verified: boolean;
+  email_verified: boolean;
 };
 
 type AuthValue = {
