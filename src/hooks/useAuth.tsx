@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
-import { phoneToLogin } from "@/lib/format";
+import { normalizePhone, phoneToLogin } from "@/lib/format";
 
 export type AppRole = "client" | "seller" | "admin";
 
@@ -13,6 +13,8 @@ export type Profile = {
   city: string | null;
   avatar_url: string | null;
   status: string;
+  phone_verified: boolean;
+  email_verified: boolean;
 };
 
 type AuthValue = {
@@ -95,32 +97,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       role,
       loading,
       async signUp({ fullName, phone, email, password, role: chosen }) {
+        const login = phoneToLogin(phone);
+        const normalized = normalizePhone(phone);
+        if (!login || !normalized) {
+          return { error: "Numéro malien invalide. Exemple : +223 70 00 00 00." };
+        }
         const { error } = await supabase.auth.signUp({
-          email: phoneToLogin(phone),
+          email: login,
           password,
           options: {
             emailRedirectTo: window.location.origin,
             data: {
               full_name: fullName,
-              phone,
+              phone: normalized,
               contact_email: email ?? "",
-              role: chosen,
+              role: chosen === "seller" ? "seller" : "client",
             },
           },
         });
         if (error) {
-          if (error.message.toLowerCase().includes("already registered")) {
+          const message = error.message.toLowerCase();
+          if (message.includes("already registered") || message.includes("duplicate") || message.includes("unique")) {
             return { error: "Ce numéro est déjà utilisé. Connectez-vous." };
+          }
+          if (message.includes("pwned") || message.includes("compromis")) {
+            return { error: "Ce mot de passe apparaît dans des fuites de données. Choisissez-en un autre." };
           }
           return { error: error.message };
         }
         return { error: null };
       },
       async signIn({ phone, password }) {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: phoneToLogin(phone),
-          password,
-        });
+        const login = phoneToLogin(phone);
+        if (!login) return { error: "Numéro malien invalide. Exemple : +223 70 00 00 00." };
+        const { error } = await supabase.auth.signInWithPassword({ email: login, password });
         if (error) return { error: "Numéro ou mot de passe incorrect." };
         return { error: null };
       },
