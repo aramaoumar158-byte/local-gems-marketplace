@@ -276,9 +276,11 @@ export type Database = {
           city: string | null
           created_at: string
           email: string | null
+          email_verified: boolean
           full_name: string
           id: string
           phone: string | null
+          phone_verified: boolean
           status: Database["public"]["Enums"]["account_status"]
           updated_at: string
         }
@@ -287,9 +289,11 @@ export type Database = {
           city?: string | null
           created_at?: string
           email?: string | null
+          email_verified?: boolean
           full_name?: string
           id: string
           phone?: string | null
+          phone_verified?: boolean
           status?: Database["public"]["Enums"]["account_status"]
           updated_at?: string
         }
@@ -298,9 +302,11 @@ export type Database = {
           city?: string | null
           created_at?: string
           email?: string | null
+          email_verified?: boolean
           full_name?: string
           id?: string
           phone?: string | null
+          phone_verified?: boolean
           status?: Database["public"]["Enums"]["account_status"]
           updated_at?: string
         }
@@ -440,9 +446,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_account_usable: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
-      account_status: "active" | "suspended"
+      account_status: "active" | "suspended" | "pending_verification"
       app_role: "client" | "seller" | "admin"
       order_status:
         | "pending"
@@ -579,7 +586,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      account_status: ["active", "suspended"],
+      account_status: ["active", "suspended", "pending_verification"],
       app_role: ["client", "seller", "admin"],
       order_status: [
         "pending",
