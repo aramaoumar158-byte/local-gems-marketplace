@@ -24,7 +24,7 @@ const signupSchema = z.object({
   email: z.string().trim().email("Adresse email invalide.").max(255).optional().or(z.literal("")),
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères.").max(72),
   role: z.enum(["client", "seller"]),
-  terms: z.literal(true, { message: "Vous devez accepter les conditions d'utilisation." }),
+  terms: z.boolean().refine((value) => value === true, "Vous devez accepter les Conditions d'utilisation et la Politique de confidentialité."),
 });
 
 export const Route = createFileRoute("/auth")({
