@@ -13,7 +13,11 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as ClientRouteImport } from './routes/client'
+import { Route as CompteSuspenduRouteImport } from './routes/compte-suspendu'
+import { Route as ConditionsRouteImport } from './routes/conditions'
+import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as SellerRouteImport } from './routes/seller'
+import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
 import { Route as ClientSplatRouteImport } from './routes/client.$'
 import { Route as SellerSplatRouteImport } from './routes/seller.$'
@@ -38,9 +42,29 @@ const ClientRoute = ClientRouteImport.update({
   path: '/client',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompteSuspenduRoute = CompteSuspenduRouteImport.update({
+  id: '/compte-suspendu',
+  path: '/compte-suspendu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConditionsRoute = ConditionsRouteImport.update({
+  id: '/conditions',
+  path: '/conditions',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SellerRoute = SellerRouteImport.update({
   id: '/seller',
   path: '/seller',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificationRoute = VerificationRouteImport.update({
+  id: '/verification',
+  path: '/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminSplatRoute = AdminSplatRouteImport.update({
@@ -64,7 +88,11 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/compte-suspendu': typeof CompteSuspenduRoute
+  '/conditions': typeof ConditionsRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/seller': typeof SellerRouteWithChildren
+  '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/client/$': typeof ClientSplatRoute
   '/seller/$': typeof SellerSplatRoute
@@ -74,7 +102,11 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/compte-suspendu': typeof CompteSuspenduRoute
+  '/conditions': typeof ConditionsRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/seller': typeof SellerRouteWithChildren
+  '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/client/$': typeof ClientSplatRoute
   '/seller/$': typeof SellerSplatRoute
@@ -85,7 +117,11 @@ export interface FileRoutesById {
   '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
   '/client': typeof ClientRouteWithChildren
+  '/compte-suspendu': typeof CompteSuspenduRoute
+  '/conditions': typeof ConditionsRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/seller': typeof SellerRouteWithChildren
+  '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/client/$': typeof ClientSplatRoute
   '/seller/$': typeof SellerSplatRoute
@@ -97,7 +133,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/client'
+    | '/compte-suspendu'
+    | '/conditions'
+    | '/confidentialite'
     | '/seller'
+    | '/verification'
     | '/admin/$'
     | '/client/$'
     | '/seller/$'
@@ -107,7 +147,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/client'
+    | '/compte-suspendu'
+    | '/conditions'
+    | '/confidentialite'
     | '/seller'
+    | '/verification'
     | '/admin/$'
     | '/client/$'
     | '/seller/$'
@@ -117,7 +161,11 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/client'
+    | '/compte-suspendu'
+    | '/conditions'
+    | '/confidentialite'
     | '/seller'
+    | '/verification'
     | '/admin/$'
     | '/client/$'
     | '/seller/$'
@@ -128,7 +176,11 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
   ClientRoute: typeof ClientRouteWithChildren
+  CompteSuspenduRoute: typeof CompteSuspenduRoute
+  ConditionsRoute: typeof ConditionsRoute
+  ConfidentialiteRoute: typeof ConfidentialiteRoute
   SellerRoute: typeof SellerRouteWithChildren
+  VerificationRoute: typeof VerificationRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -161,11 +213,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ClientRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/compte-suspendu': {
+      id: '/compte-suspendu'
+      path: '/compte-suspendu'
+      fullPath: '/compte-suspendu'
+      preLoaderRoute: typeof CompteSuspenduRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/conditions': {
+      id: '/conditions'
+      path: '/conditions'
+      fullPath: '/conditions'
+      preLoaderRoute: typeof ConditionsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confidentialite': {
+      id: '/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/confidentialite'
+      preLoaderRoute: typeof ConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/seller': {
       id: '/seller'
       path: '/seller'
       fullPath: '/seller'
       preLoaderRoute: typeof SellerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verification': {
+      id: '/verification'
+      path: '/verification'
+      fullPath: '/verification'
+      preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/$': {
@@ -229,7 +309,11 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
   ClientRoute: ClientRouteWithChildren,
+  CompteSuspenduRoute: CompteSuspenduRoute,
+  ConditionsRoute: ConditionsRoute,
+  ConfidentialiteRoute: ConfidentialiteRoute,
   SellerRoute: SellerRouteWithChildren,
+  VerificationRoute: VerificationRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

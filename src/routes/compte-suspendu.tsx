@@ -27,7 +27,9 @@ function SuspendedPage() {
   return (
     <div className="grid min-h-screen place-items-center bg-mesh px-4">
       <div className="w-full max-w-md rounded-2xl border bg-card p-8 text-center shadow-float">
-        <Brand className="justify-center" />
+        <div className="flex justify-center">
+          <Brand />
+        </div>
         <span className="mx-auto mt-6 grid size-14 place-items-center rounded-full bg-destructive/10 text-destructive">
           <ShieldAlert className="size-6" />
         </span>
