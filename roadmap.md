@@ -1,25 +1,36 @@
-# Roadmap — Plateforme fabricants & vendeurs (Mali)
+# Roadmap — ANW KA SUKU (plateforme fabricants, vendeurs & clients, Mali)
 
-## Identité officielle
-- [ ] Utiliser exactement « ANW KA SUKU » dans le logo, les titres, la navigation, l'authentification et les trois espaces
+Nom officiel exact à utiliser partout : **ANW KA SUKU**
 
 ## Sprint 0 — Fondations
-- [ ] Direction artistique (vert profond / orange-or / blanc / noir tech) dans src/styles.css
-- [ ] Page d'accueil publique (hero, recherche, catégories, produits, boutiques)
-- [ ] Navigation & layout partagés
+- [x] Direction artistique (vert profond / orange-or / blanc / encre tech)
+- [x] Page d'accueil publique (hero, recherche, catégories, produits, boutiques)
+- [x] Navigation & layout partagés
 
-## Sprint 1 — Auth & rôles
-- [ ] Lovable Cloud activé
-- [ ] Schéma: profiles, user_roles, stores, products, orders (+ données de démo)
-- [ ] Inscription (nom, téléphone, email facultatif, rôle client/vendeur)
-- [ ] Connexion par téléphone + mot de passe
-- [ ] Redirection automatique /client /seller /admin
-- [ ] Protection stricte des routes par rôle
+## Sprint 1 — Auth, rôles & sécurité
+- [x] Lovable Cloud activé
+- [x] Schéma: profiles, user_roles, stores, products, orders (+ données de démo)
+- [x] Inscription (nom, téléphone obligatoire, email facultatif, rôle client/vendeur)
+- [x] Connexion par téléphone + mot de passe
+- [x] Validation stricte du format Mali +223
+- [x] Unicité du numéro de téléphone
+- [x] Indicateur de robustesse + afficher/masquer le mot de passe
+- [x] Case obligatoire Conditions d'utilisation + Politique de confidentialité
+- [x] Pages /conditions et /confidentialite
+- [x] État du compte: active / pending_verification / suspended
+- [x] Écran de vérification après inscription
+- [x] Page compte suspendu + blocage des écritures pour les comptes suspendus
+- [x] Rôle Super Admin non attribuable publiquement (aucune écriture possible sur user_roles)
+- [x] Redirection automatique /client /seller /admin
+- [x] Protection des routes par rôle + règles d'accès base de données
+- [ ] Vérification OTP par SMS — bloqué : nécessite un opérateur SMS externe
+- [ ] Vérification email — prévue après activation de l'envoi d'emails
 
 ## Interfaces
-- [ ] Client: dashboard, explorer, favoris, panier, commandes, messages, profil
-- [ ] Vendeur: dashboard, boutique, produits, ajouter produit, commandes, messages, ventes, revenus, profil
-- [ ] Admin: dashboard, utilisateurs, vendeurs, clients, boutiques, produits, commandes, finances, statistiques
+- [x] Client: dashboard, explorer, favoris, panier, commandes, messages, profil
+- [x] Vendeur: dashboard, boutique, produits, ajouter produit, commandes, messages, ventes, revenus, profil
+- [x] Admin: dashboard, utilisateurs, vendeurs, clients, boutiques, produits, commandes, finances, statistiques
 
-## Plus tard (hors sprint)
+## Plus tard (hors sprint 1)
 - Mobile Money, wallet, retraits, commissions, messagerie temps réel
+- Branchement des écrans sur les données réelles (actuellement données de démonstration)
