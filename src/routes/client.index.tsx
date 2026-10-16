@@ -1,0 +1,4 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { ClientPage } from "@/components/role-pages";
+import { requireRole } from "@/lib/auth-guard";
+export const Route = createFileRoute("/client/")({ ssr: false, beforeLoad: () => requireRole("client"), head: () => ({ meta: [{ title: "Espace Client — ANW KA SUKU" }, { name: "description", content: "Découvrez vos produits, commandes et favoris sur ANW KA SUKU." }, { property: "og:title", content: "Espace Client — ANW KA SUKU" }, { property: "og:description", content: "Votre espace d'achat ANW KA SUKU." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary" }, { name: "robots", content: "noindex" }] }), component: () => <ClientPage /> });

@@ -10,34 +10,173 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "14.5"
+    PostgrestVersion: "14.17"
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          admin_id: string | null
+          created_at: string
+          id: string
+          metadata: Json
+          target_id: string | null
+          target_type: string
+        }
+        Insert: {
+          action: string
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type: string
+        }
+        Update: {
+          action?: string
+          admin_id?: string | null
+          created_at?: string
+          id?: string
+          metadata?: Json
+          target_id?: string | null
+          target_type?: string
+        }
+        Relationships: []
+      }
+      admin_permissions: {
+        Row: {
+          created_at: string
+          id: string
+          permission: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          permission: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          permission?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string
           emoji: string | null
+          icon_url: string | null
           id: string
+          is_active: boolean
           name: string
+          parent_id: string | null
           position: number
           slug: string
         }
         Insert: {
           created_at?: string
           emoji?: string | null
+          icon_url?: string | null
           id?: string
+          is_active?: boolean
           name: string
+          parent_id?: string | null
           position?: number
           slug: string
         }
         Update: {
           created_at?: string
           emoji?: string | null
+          icon_url?: string | null
           id?: string
+          is_active?: boolean
           name?: string
+          parent_id?: string | null
           position?: number
           slug?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "categories_parent_id_fkey"
+            columns: ["parent_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      commissions: {
+        Row: {
+          commission_amount: number
+          created_at: string
+          gross_amount: number
+          id: string
+          is_demo: boolean
+          order_id: string | null
+          rate: number
+          reference: string
+          seller_amount: number
+          seller_id: string | null
+          status: string
+        }
+        Insert: {
+          commission_amount?: number
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          is_demo?: boolean
+          order_id?: string | null
+          rate?: number
+          reference?: string
+          seller_amount?: number
+          seller_id?: string | null
+          status?: string
+        }
+        Update: {
+          commission_amount?: number
+          created_at?: string
+          gross_amount?: number
+          id?: string
+          is_demo?: boolean
+          order_id?: string | null
+          rate?: number
+          reference?: string
+          seller_amount?: number
+          seller_id?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "commissions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      conversations: {
+        Row: {
+          client_id: string | null
+          created_at: string
+          id: string
+          seller_id: string | null
+        }
+        Insert: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          seller_id?: string | null
+        }
+        Update: {
+          client_id?: string | null
+          created_at?: string
+          id?: string
+          seller_id?: string | null
         }
         Relationships: []
       }
@@ -69,6 +208,74 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          sender_id: string | null
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          audience: string
+          body: string | null
+          created_at: string
+          id: string
+          is_demo: boolean
+          kind: string
+          read_at: string | null
+          recipient_id: string | null
+          title: string
+        }
+        Insert: {
+          audience?: string
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          kind: string
+          read_at?: string | null
+          recipient_id?: string | null
+          title: string
+        }
+        Update: {
+          audience?: string
+          body?: string | null
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          kind?: string
+          read_at?: string | null
+          recipient_id?: string | null
+          title?: string
+        }
+        Relationships: []
       }
       order_items: {
         Row: {
@@ -122,8 +329,10 @@ export type Database = {
           customer_id: string | null
           delivery_address: string | null
           delivery_phone: string | null
+          delivery_status: string
           id: string
           is_demo: boolean
+          payment_status: string
           reference: string
           seller_id: string | null
           status: Database["public"]["Enums"]["order_status"]
@@ -137,8 +346,10 @@ export type Database = {
           customer_id?: string | null
           delivery_address?: string | null
           delivery_phone?: string | null
+          delivery_status?: string
           id?: string
           is_demo?: boolean
+          payment_status?: string
           reference?: string
           seller_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
@@ -152,8 +363,10 @@ export type Database = {
           customer_id?: string | null
           delivery_address?: string | null
           delivery_phone?: string | null
+          delivery_status?: string
           id?: string
           is_demo?: boolean
+          payment_status?: string
           reference?: string
           seller_id?: string | null
           status?: Database["public"]["Enums"]["order_status"]
@@ -167,6 +380,56 @@ export type Database = {
             columns: ["store_id"]
             isOneToOne: false
             referencedRelation: "stores"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payments: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          customer_id: string | null
+          id: string
+          is_demo: boolean
+          order_id: string | null
+          provider: string | null
+          provider_reference: string | null
+          reference: string
+          status: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          id?: string
+          is_demo?: boolean
+          order_id?: string | null
+          provider?: string | null
+          provider_reference?: string | null
+          reference?: string
+          status?: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          customer_id?: string | null
+          id?: string
+          is_demo?: boolean
+          order_id?: string | null
+          provider?: string | null
+          provider_reference?: string | null
+          reference?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
             referencedColumns: ["id"]
           },
         ]
@@ -198,6 +461,30 @@ export type Database = {
           method?: string | null
           seller_id?: string | null
           status?: string
+        }
+        Relationships: []
+      }
+      platform_settings: {
+        Row: {
+          is_sensitive: boolean
+          key: string
+          updated_at: string
+          updated_by: string | null
+          value: Json
+        }
+        Insert: {
+          is_sensitive?: boolean
+          key: string
+          updated_at?: string
+          updated_by?: string | null
+          value: Json
+        }
+        Update: {
+          is_sensitive?: boolean
+          key?: string
+          updated_at?: string
+          updated_by?: string | null
+          value?: Json
         }
         Relationships: []
       }
@@ -279,6 +566,7 @@ export type Database = {
           email_verified: boolean
           full_name: string
           id: string
+          last_active_at: string | null
           phone: string | null
           phone_verified: boolean
           status: Database["public"]["Enums"]["account_status"]
@@ -292,6 +580,7 @@ export type Database = {
           email_verified?: boolean
           full_name?: string
           id: string
+          last_active_at?: string | null
           phone?: string | null
           phone_verified?: boolean
           status?: Database["public"]["Enums"]["account_status"]
@@ -305,10 +594,50 @@ export type Database = {
           email_verified?: boolean
           full_name?: string
           id?: string
+          last_active_at?: string | null
           phone?: string | null
           phone_verified?: boolean
           status?: Database["public"]["Enums"]["account_status"]
           updated_at?: string
+        }
+        Relationships: []
+      }
+      reports: {
+        Row: {
+          created_at: string
+          id: string
+          is_demo: boolean
+          reason: string
+          reporter_id: string | null
+          severity: string
+          status: string
+          target_id: string | null
+          target_label: string | null
+          target_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          reason: string
+          reporter_id?: string | null
+          severity?: string
+          status?: string
+          target_id?: string | null
+          target_label?: string | null
+          target_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          reason?: string
+          reporter_id?: string | null
+          severity?: string
+          status?: string
+          target_id?: string | null
+          target_label?: string | null
+          target_type?: string
         }
         Relationships: []
       }
@@ -434,24 +763,165 @@ export type Database = {
         }
         Relationships: []
       }
+      wallet_ledger: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          entry_type: string
+          id: string
+          reference: string
+          source_id: string | null
+          source_type: string | null
+          wallet_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          entry_type: string
+          id?: string
+          reference?: string
+          source_id?: string | null
+          source_type?: string | null
+          wallet_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          entry_type?: string
+          id?: string
+          reference?: string
+          source_id?: string | null
+          source_type?: string | null
+          wallet_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "wallet_ledger_wallet_id_fkey"
+            columns: ["wallet_id"]
+            isOneToOne: false
+            referencedRelation: "wallets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      wallets: {
+        Row: {
+          created_at: string
+          currency: string
+          id: string
+          kind: string
+          owner_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          id?: string
+          kind: string
+          owner_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          id?: string
+          kind?: string
+          owner_id?: string | null
+        }
+        Relationships: []
+      }
+      withdrawals: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          is_demo: boolean
+          method: string | null
+          processed_at: string | null
+          reference: string
+          seller_id: string | null
+          seller_label: string | null
+          status: string
+          transaction_reference: string | null
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          method?: string | null
+          processed_at?: string | null
+          reference?: string
+          seller_id?: string | null
+          seller_label?: string | null
+          status?: string
+          transaction_reference?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          is_demo?: boolean
+          method?: string | null
+          processed_at?: string | null
+          reference?: string
+          seller_id?: string | null
+          seller_label?: string | null
+          status?: string
+          transaction_reference?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_action: {
+        Args: {
+          _action: string
+          _note?: string
+          _target_id: string
+          _target_type: string
+          _value?: string
+        }
+        Returns: undefined
+      }
+      admin_update_setting: {
+        Args: { _key: string; _value: Json }
+        Returns: undefined
+      }
+      admin_upsert_category: {
+        Args: {
+          _emoji: string
+          _id: string
+          _name: string
+          _position: number
+          _slug: string
+        }
+        Returns: string
+      }
     }
     Enums: {
       account_status: "active" | "suspended" | "pending_verification"
-      app_role: "client" | "seller" | "admin"
+      app_role: "client" | "seller" | "admin" | "super_admin"
       order_status:
         | "pending"
         | "confirmed"
         | "shipped"
         | "delivered"
         | "cancelled"
-      product_status: "draft" | "active" | "hidden" | "removed"
-      store_status: "pending" | "approved" | "suspended"
+      product_status:
+        | "draft"
+        | "active"
+        | "hidden"
+        | "removed"
+        | "pending_review"
+        | "published"
+        | "rejected"
+        | "suspended"
+      store_status: "pending" | "approved" | "suspended" | "active" | "rejected"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -580,7 +1050,7 @@ export const Constants = {
   public: {
     Enums: {
       account_status: ["active", "suspended", "pending_verification"],
-      app_role: ["client", "seller", "admin"],
+      app_role: ["client", "seller", "admin", "super_admin"],
       order_status: [
         "pending",
         "confirmed",
@@ -588,8 +1058,17 @@ export const Constants = {
         "delivered",
         "cancelled",
       ],
-      product_status: ["draft", "active", "hidden", "removed"],
-      store_status: ["pending", "approved", "suspended"],
+      product_status: [
+        "draft",
+        "active",
+        "hidden",
+        "removed",
+        "pending_review",
+        "published",
+        "rejected",
+        "suspended",
+      ],
+      store_status: ["pending", "approved", "suspended", "active", "rejected"],
     },
   },
 } as const

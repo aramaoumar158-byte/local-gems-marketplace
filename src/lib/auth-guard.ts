@@ -24,7 +24,7 @@ export async function requireRole(required: AppRole) {
   if (profile?.status === "suspended") throw redirect({ to: "/compte-suspendu" });
 
   const list = (roles ?? []).map((item) => item.role);
-  const actual: AppRole = list.includes("admin")
+  const actual: AppRole = (list.includes("admin") || (list as string[]).includes("super_admin"))
     ? "admin"
     : list.includes("seller")
       ? "seller"
