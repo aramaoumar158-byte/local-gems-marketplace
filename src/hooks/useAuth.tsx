@@ -62,7 +62,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setProfile((p as Profile) ?? null);
     const roles = (r ?? []).map((x) => x.role as AppRole);
     setRole(
-      roles.includes("admin")
+      (roles.includes("admin") || (roles as string[]).includes("super_admin"))
         ? "admin"
         : roles.includes("seller")
           ? "seller"
