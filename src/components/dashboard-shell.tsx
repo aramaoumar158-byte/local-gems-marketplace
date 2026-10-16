@@ -30,7 +30,7 @@ export function DashboardShell({ role, title, children }: { role: AppRole; title
     <div className="flex h-full flex-col bg-sidebar text-sidebar-foreground">
       <div className="flex h-20 items-center justify-between border-b border-sidebar-border px-5"><Brand inverse /><Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(false)} aria-label="Fermer"><X /></Button></div>
       <div className="px-5 py-5"><p className="text-[10px] font-bold uppercase tracking-[0.16em] text-sidebar-foreground/45">{labels[role]}</p></div>
-      <nav className="flex-1 space-y-1 px-3">
+      <nav className="no-scrollbar flex-1 space-y-1 overflow-y-auto px-3 pb-4">
         {navByRole[role].map(([slug, label, Icon]) => {
           const href = slug ? `${base}/${slug}` : base;
           const active = pathname === href;
@@ -49,7 +49,7 @@ export function DashboardShell({ role, title, children }: { role: AppRole; title
         <header className="sticky top-0 z-30 flex h-16 items-center gap-3 border-b bg-background/95 px-4 backdrop-blur sm:px-6">
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setOpen(true)} aria-label="Ouvrir le menu"><Menu /></Button>
           <div><p className="text-xs text-muted-foreground">{labels[role]}</p><h1 className="text-lg font-bold">{title}</h1></div>
-          <div className="ml-auto flex items-center gap-2"><Button variant="ghost" size="icon" aria-label="Notifications"><Bell /></Button><div className="hidden text-right sm:block"><p className="text-xs font-bold">{profile?.full_name || "Compte démo"}</p><p className="text-[10px] text-muted-foreground">{labels[role]}</p></div><span className="grid size-9 place-items-center rounded-full bg-primary-soft text-xs font-extrabold text-primary-deep">{(profile?.full_name || "AK").split(" ").map((x) => x[0]).slice(0,2).join("")}</span></div>
+          <div className="ml-auto flex items-center gap-2">{role === "admin" && <form action="/admin/users" className="hidden md:block"><input name="q" placeholder="Rechercher un utilisateur…" className="h-10 w-64 rounded-lg border bg-secondary px-3 text-sm outline-none focus:ring-2 focus:ring-ring" /></form>}<a href={role === "admin" ? "/admin/notifications" : "#"} aria-label="Notifications" className="grid size-10 place-items-center rounded-lg hover:bg-secondary"><Bell className="size-5" /></a><div className="hidden text-right sm:block"><p className="text-xs font-bold">{profile?.full_name || (role === "admin" ? "Administrateur" : "Compte démo")}</p><p className="text-[10px] text-muted-foreground">{labels[role]}</p></div><span className="grid size-9 place-items-center rounded-full bg-primary-soft text-xs font-extrabold text-primary-deep">{(profile?.full_name || "AK").split(" ").map((x) => x[0]).slice(0,2).join("")}</span></div>
         </header>
         <main className="mx-auto max-w-[1500px] p-4 sm:p-6 lg:p-8">{children}</main>
       </div>
