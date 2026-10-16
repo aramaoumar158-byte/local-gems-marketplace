@@ -33,7 +33,7 @@ function useAction() {
   const qc = useQueryClient();
   return async (action: string, target_type: string, target_id: string, value?: string) => {
     const { error } = await db.rpc("admin_action", { _action: action, _target_type: target_type, _target_id: target_id, _value: value ?? null, _note: null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Action enregistrée dans le journal d'audit");
     void qc.invalidateQueries({ queryKey: ["admin"] });
   };
@@ -347,9 +347,9 @@ function CategoriesPage() {
   const [form, setForm] = useState<{ id: string | null; name: string; emoji: string; position: number }>({ id: null, name: "", emoji: "", position: 0 });
   const slugify = (s: string) => s.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   async function save() {
-    if (form.name.trim().length < 2) return toast.error("Nom trop court");
+    if (form.name.trim().length < 2) { toast.error("Nom trop court"); return; }
     const { error } = await db.rpc("admin_upsert_category", { _id: form.id, _name: form.name.trim(), _slug: slugify(form.name), _emoji: form.emoji || null, _position: form.position });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(form.id ? "Catégorie modifiée" : "Catégorie créée"); setForm({ id: null, name: "", emoji: "", position: 0 }); void qc.invalidateQueries({ queryKey: ["admin"] });
   }
   return <DashboardShell role="admin" title="Catégories">
@@ -384,7 +384,7 @@ function SettingsPage() {
   async function save(key: string) {
     let v: any = edit[key]; try { v = JSON.parse(v); } catch { /* string */ }
     const { error } = await db.rpc("admin_update_setting", { _key: key, _value: v });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Paramètre enregistré et audité"); void qc.invalidateQueries({ queryKey: ["admin"] });
   }
   const groups = useMemo(() => [["Paramètres financiers", (s.data ?? []).filter((x) => x.is_sensitive)], ["Paramètres généraux", (s.data ?? []).filter((x) => !x.is_sensitive)]] as const, [s.data]);
