@@ -1,5 +1,5 @@
 import { Link, useRouterState } from "@tanstack/react-router";
-import { BarChart3, Bell, ChevronRight, CircleDollarSign, Heart, LayoutDashboard, LogOut, Menu, MessageCircle, Package, Search, Settings, ShoppingBag, Store, Users, WalletCards, X } from "lucide-react";
+import { BarChart3, Bell, ChevronRight, CircleDollarSign, Flag, Heart, LayoutDashboard, LogOut, Menu, MessageCircle, Package, Search, Settings, ShieldCheck, ShoppingBag, Store, Tags, Users, WalletCards, X } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
@@ -14,7 +14,7 @@ const navByRole = {
     ["", "Tableau de bord", LayoutDashboard], ["boutique", "Ma boutique", Store], ["produits", "Mes produits", Package], ["ajouter-produit", "Ajouter un produit", ShoppingBag], ["commandes", "Commandes", Package], ["messages", "Messages", MessageCircle], ["ventes", "Ventes", BarChart3], ["revenus", "Revenus", WalletCards], ["profil", "Profil", Settings],
   ],
   admin: [
-    ["", "Vue d'ensemble", LayoutDashboard], ["utilisateurs", "Utilisateurs", Users], ["vendeurs", "Vendeurs", Store], ["clients", "Clients", Users], ["boutiques", "Boutiques", Store], ["produits", "Produits", Package], ["commandes", "Commandes", ShoppingBag], ["finances", "Finances", CircleDollarSign], ["statistiques", "Statistiques", BarChart3],
+    ["", "Dashboard", LayoutDashboard], ["users", "Utilisateurs", Users], ["sellers", "Vendeurs", Store], ["stores", "Boutiques", Store], ["products", "Produits", Package], ["orders", "Commandes", ShoppingBag], ["transactions", "Transactions", CircleDollarSign], ["commissions", "Commissions", BarChart3], ["withdrawals", "Retraits", WalletCards], ["reports", "Signalements", Flag], ["security", "Sécurité", ShieldCheck], ["categories", "Catégories", Tags], ["notifications", "Notifications", Bell], ["settings", "Paramètres", Settings],
   ],
 } as const;
 

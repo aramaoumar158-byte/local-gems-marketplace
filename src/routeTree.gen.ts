@@ -10,16 +10,16 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AuthRouteImport } from './routes/auth'
-import { Route as ClientRouteImport } from './routes/client'
 import { Route as CompteSuspenduRouteImport } from './routes/compte-suspendu'
 import { Route as ConditionsRouteImport } from './routes/conditions'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
-import { Route as SellerRouteImport } from './routes/seller'
 import { Route as VerificationRouteImport } from './routes/verification'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
+import { Route as ClientIndexRouteImport } from './routes/client.index'
 import { Route as ClientSplatRouteImport } from './routes/client.$'
+import { Route as SellerIndexRouteImport } from './routes/seller.index'
 import { Route as SellerSplatRouteImport } from './routes/seller.$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -27,19 +27,9 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ClientRoute = ClientRouteImport.update({
-  id: '/client',
-  path: '/client',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CompteSuspenduRoute = CompteSuspenduRouteImport.update({
@@ -57,130 +47,143 @@ const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
   path: '/confidentialite',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SellerRoute = SellerRouteImport.update({
-  id: '/seller',
-  path: '/seller',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminIndexRoute = AdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSplatRoute = AdminSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => AdminRoute,
+  id: '/admin/$',
+  path: '/admin/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClientIndexRoute = ClientIndexRouteImport.update({
+  id: '/client/',
+  path: '/client/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const ClientSplatRoute = ClientSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => ClientRoute,
+  id: '/client/$',
+  path: '/client/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SellerIndexRoute = SellerIndexRouteImport.update({
+  id: '/seller/',
+  path: '/seller/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SellerSplatRoute = SellerSplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => SellerRoute,
+  id: '/seller/$',
+  path: '/seller/$',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
-  '/client': typeof ClientRouteWithChildren
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
-  '/seller': typeof SellerRouteWithChildren
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/client/$': typeof ClientSplatRoute
   '/seller/$': typeof SellerSplatRoute
+  '/admin/': typeof AdminIndexRoute
+  '/client/': typeof ClientIndexRoute
+  '/seller/': typeof SellerIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
-  '/client': typeof ClientRouteWithChildren
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
-  '/seller': typeof SellerRouteWithChildren
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/client/$': typeof ClientSplatRoute
   '/seller/$': typeof SellerSplatRoute
+  '/admin': typeof AdminIndexRoute
+  '/client': typeof ClientIndexRoute
+  '/seller': typeof SellerIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/admin': typeof AdminRouteWithChildren
   '/auth': typeof AuthRoute
-  '/client': typeof ClientRouteWithChildren
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
-  '/seller': typeof SellerRouteWithChildren
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/client/$': typeof ClientSplatRoute
   '/seller/$': typeof SellerSplatRoute
+  '/admin/': typeof AdminIndexRoute
+  '/client/': typeof ClientIndexRoute
+  '/seller/': typeof SellerIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/admin'
     | '/auth'
-    | '/client'
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
-    | '/seller'
     | '/verification'
     | '/admin/$'
     | '/client/$'
     | '/seller/$'
+    | '/admin/'
+    | '/client/'
+    | '/seller/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/admin'
     | '/auth'
-    | '/client'
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
-    | '/seller'
     | '/verification'
     | '/admin/$'
     | '/client/$'
     | '/seller/$'
+    | '/admin'
+    | '/client'
+    | '/seller'
   id:
     | '__root__'
     | '/'
-    | '/admin'
     | '/auth'
-    | '/client'
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
-    | '/seller'
     | '/verification'
     | '/admin/$'
     | '/client/$'
     | '/seller/$'
+    | '/admin/'
+    | '/client/'
+    | '/seller/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AdminRoute: typeof AdminRouteWithChildren
   AuthRoute: typeof AuthRoute
-  ClientRoute: typeof ClientRouteWithChildren
   CompteSuspenduRoute: typeof CompteSuspenduRoute
   ConditionsRoute: typeof ConditionsRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
-  SellerRoute: typeof SellerRouteWithChildren
   VerificationRoute: typeof VerificationRoute
+  AdminSplatRoute: typeof AdminSplatRoute
+  ClientSplatRoute: typeof ClientSplatRoute
+  SellerSplatRoute: typeof SellerSplatRoute
+  AdminIndexRoute: typeof AdminIndexRoute
+  ClientIndexRoute: typeof ClientIndexRoute
+  SellerIndexRoute: typeof SellerIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -192,25 +195,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/client': {
-      id: '/client'
-      path: '/client'
-      fullPath: '/client'
-      preLoaderRoute: typeof ClientRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/compte-suspendu': {
@@ -234,13 +223,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/seller': {
-      id: '/seller'
-      path: '/seller'
-      fullPath: '/seller'
-      preLoaderRoute: typeof SellerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/verification': {
       id: '/verification'
       path: '/verification'
@@ -248,72 +230,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificationRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/': {
+      id: '/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/$': {
       id: '/admin/$'
-      path: '/$'
+      path: '/admin/$'
       fullPath: '/admin/$'
       preLoaderRoute: typeof AdminSplatRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/client/': {
+      id: '/client/'
+      path: '/client'
+      fullPath: '/client/'
+      preLoaderRoute: typeof ClientIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/client/$': {
       id: '/client/$'
-      path: '/$'
+      path: '/client/$'
       fullPath: '/client/$'
       preLoaderRoute: typeof ClientSplatRouteImport
-      parentRoute: typeof ClientRoute
+      parentRoute: typeof rootRouteImport
+    }
+    '/seller/': {
+      id: '/seller/'
+      path: '/seller'
+      fullPath: '/seller/'
+      preLoaderRoute: typeof SellerIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/seller/$': {
       id: '/seller/$'
-      path: '/$'
+      path: '/seller/$'
       fullPath: '/seller/$'
       preLoaderRoute: typeof SellerSplatRouteImport
-      parentRoute: typeof SellerRoute
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface AdminRouteChildren {
-  AdminSplatRoute: typeof AdminSplatRoute
-}
-
-const AdminRouteChildren: AdminRouteChildren = {
-  AdminSplatRoute: AdminSplatRoute,
-}
-
-const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
-
-interface ClientRouteChildren {
-  ClientSplatRoute: typeof ClientSplatRoute
-}
-
-const ClientRouteChildren: ClientRouteChildren = {
-  ClientSplatRoute: ClientSplatRoute,
-}
-
-const ClientRouteWithChildren =
-  ClientRoute._addFileChildren(ClientRouteChildren)
-
-interface SellerRouteChildren {
-  SellerSplatRoute: typeof SellerSplatRoute
-}
-
-const SellerRouteChildren: SellerRouteChildren = {
-  SellerSplatRoute: SellerSplatRoute,
-}
-
-const SellerRouteWithChildren =
-  SellerRoute._addFileChildren(SellerRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AdminRoute: AdminRouteWithChildren,
   AuthRoute: AuthRoute,
-  ClientRoute: ClientRouteWithChildren,
   CompteSuspenduRoute: CompteSuspenduRoute,
   ConditionsRoute: ConditionsRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
-  SellerRoute: SellerRouteWithChildren,
   VerificationRoute: VerificationRoute,
+  AdminSplatRoute: AdminSplatRoute,
+  ClientSplatRoute: ClientSplatRoute,
+  SellerSplatRoute: SellerSplatRoute,
+  AdminIndexRoute: AdminIndexRoute,
+  ClientIndexRoute: ClientIndexRoute,
+  SellerIndexRoute: SellerIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
