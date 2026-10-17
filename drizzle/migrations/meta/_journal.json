@@ -8,6 +8,13 @@
       "when": 1792183045777,
       "tag": "0000_super_admin_space",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792241565424,
+      "tag": "0001_sensitive_admin_audit",
+      "breakpoints": true
     }
   ]
 }
