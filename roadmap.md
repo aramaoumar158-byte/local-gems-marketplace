@@ -27,7 +27,8 @@ Nom officiel exact à utiliser partout : **ANW KA SUKU**
 - [ ] Vérification email — prévue après activation de l'envoi d'emails
 
 ## Interfaces
-- [ ] Administrator audit: immutable records, actor/target snapshots, searchable review and authorization checks
+- [x] Administrator audit: immutable records, actor/target snapshots, searchable paginated review and database authorization
+- [ ] Administrator audit end-to-end verification — blocked: no administrator account exists; sign in with an internally authorized administrator
 - [x] Client: dashboard, explorer, favoris, panier, commandes, messages, profil
 - [x] Vendeur: dashboard, boutique, produits, ajouter produit, commandes, messages, ventes, revenus, profil
 - [x] Admin: dashboard, utilisateurs, vendeurs, clients, boutiques, produits, commandes, finances, statistiques

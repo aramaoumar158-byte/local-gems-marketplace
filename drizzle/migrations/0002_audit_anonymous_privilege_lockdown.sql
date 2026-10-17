@@ -1,0 +1,2 @@
+REVOKE ALL ON public.admin_audit_log FROM anon;
+COMMENT ON TABLE public.admin_audit_log IS 'Append-only sensitive administrator history. Readable only by authenticated, non-suspended administrators; secrets are redacted. Failed transactions do not produce success records.';

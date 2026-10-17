@@ -12,8 +12,8 @@ export function auditValue(value: Json | undefined): string {
 
 export function auditChanges(metadata: Json) {
   const details = auditDetails(metadata);
-  const before = auditDetails(details.before ?? null);
-  const after = auditDetails(details.after ?? null);
+  const before = auditDetails(details['before'] ?? null);
+  const after = auditDetails(details['after'] ?? null);
   return [...new Set([...Object.keys(before), ...Object.keys(after)])]
     .filter(key => JSON.stringify(before[key]) !== JSON.stringify(after[key]))
     .map(key => ({ key, before: auditValue(before[key]), after: auditValue(after[key]) }));
