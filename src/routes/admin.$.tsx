@@ -1,4 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { AdminPage } from "@/components/admin-pages";
 import { requireRole } from "@/lib/auth-guard";
-export const Route = createFileRoute("/admin/$")({ ssr: false, beforeLoad: () => requireRole("admin"), component: () => <AdminPage slug={Route.useParams()._splat ?? ""} /> });
+export const Route = createFileRoute("/admin/$")({ ssr: false, beforeLoad: () => requireRole("admin"), head: ({ params }) => { const title = `${params._splat === 'security' ? 'Sécurité et journal d’audit' : 'Administration : ' + (params._splat ?? '')} — ANW KA SUKU`; const description = 'Centre de contrôle sécurisé et historique des actions administratives ANW KA SUKU.'; return { meta: [{ title }, { name: 'description', content: description }, { property: 'og:title', content: title }, { property: 'og:description', content: description }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary' }, { name: 'robots', content: 'noindex' }] }; }, component: () => <AdminPage slug={Route.useParams()._splat ?? ""} /> });

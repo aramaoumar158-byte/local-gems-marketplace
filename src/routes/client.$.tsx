@@ -1,4 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ClientPage } from "@/components/role-pages";
 import { requireRole } from "@/lib/auth-guard";
-export const Route = createFileRoute("/client/$")({ ssr: false, beforeLoad: () => requireRole("client"), component: () => <ClientPage slug={Route.useParams()._splat ?? ""} /> });
+export const Route = createFileRoute("/client/$")({ ssr: false, beforeLoad: () => requireRole("client"), head: ({ params }) => { const title = `Espace client : ${params._splat ?? ''} — ANW KA SUKU`; const description = 'Votre espace client privé ANW KA SUKU.'; return { meta: [{ title }, { name: 'description', content: description }, { property: 'og:title', content: title }, { property: 'og:description', content: description }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary' }, { name: 'robots', content: 'noindex' }] }; }, component: () => <ClientPage slug={Route.useParams()._splat ?? ""} /> });
