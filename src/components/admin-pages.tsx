@@ -9,6 +9,7 @@ import { DashboardShell, MetricCard } from "@/components/dashboard-shell";
 import { Button } from "@/components/ui/button";
 import { compact, fcfa } from "@/lib/format";
 import { cn } from "@/lib/utils";
+import { AdminAuditLog } from "@/components/admin-audit-log";
 
 const db = supabase as any;
 
@@ -330,8 +331,8 @@ function SecurityPage() {
   return <DashboardShell role="admin" title="Sécurité & audit">
     <div className="grid grid-cols-2 gap-3 lg:grid-cols-5"><MetricCard label="Comptes signalés" value={String(pend("user"))} note="En attente" icon={Users} /><MetricCard label="Produits signalés" value={String(pend("product"))} note="En attente" icon={Package} accent /><MetricCard label="Boutiques signalées" value={String(pend("store"))} note="En attente" icon={Store} /><MetricCard label="Activités suspectes" value={String(pend("activity"))} note="À examiner" icon={ShieldAlert} accent /><MetricCard label="Accès refusés" value={String(attempts.length)} note="Tentatives tracées" icon={Lock} /></div>
     <div className="mt-5 grid gap-4 lg:grid-cols-3">
-      <div className="lg:col-span-2"><Panel title="Journal d'audit administratif" kicker="ADMIN_AUDIT_LOG · immuable">
-        {log.data?.length ? <div className="divide-y">{log.data.map((l) => <div key={l.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5 text-sm"><span className={cn("rounded px-2 py-0.5 font-mono text-[11px] font-bold", l.action === "UNAUTHORIZED_ATTEMPT" ? "bg-destructive/10 text-destructive" : "bg-primary-soft text-primary-deep")}>{l.action}</span><span className="text-muted-foreground">{l.target_type} · <span className="font-mono text-xs">{String(l.target_id ?? "").slice(0, 8)}</span></span><span className="ml-auto text-xs text-muted-foreground">{new Date(l.created_at).toLocaleString("fr-FR")}</span></div>)}</div> : <p className="py-8 text-center text-sm text-muted-foreground">Aucune action enregistrée pour l'instant. Chaque suspension, validation ou retrait traité apparaîtra ici.</p>}
+      <div className="lg:col-span-2"><Panel title="Journal d'audit administratif" kicker="Historique immuable">
+        <AdminAuditLog />
       </Panel></div>
       <Panel title="Vie privée des messages" kicker="Politique">
         <div className="space-y-3 text-sm"><p className="flex gap-2"><ShieldCheck className="size-4 shrink-0 text-success" />Les conversations Client ↔ Vendeur ne sont pas accessibles librement par l'administration.</p><p>L'accès exceptionnel est réservé aux cas de signalement, sécurité, fraude, litige ou obligation légale.</p><p>Chaque consultation sera justifiée et enregistrée dans le journal d'audit.</p><Button variant="outline" className="w-full" disabled><Lock /> Accès exceptionnel (procédure à venir)</Button></div>
