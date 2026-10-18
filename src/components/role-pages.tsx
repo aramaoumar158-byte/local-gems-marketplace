@@ -1,4 +1,5 @@
-import { useState, type ReactNode } from "react";
+import { Link } from "@tanstack/react-router";
+import { useEffect, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Area,
@@ -18,18 +19,22 @@ import {
   CircleDollarSign,
   Heart,
   MessageCircle,
+  Minus,
   Package,
   Plus,
   Search,
   ShoppingBag,
   Store,
+  Trash2,
   TrendingUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { DashboardShell, MetricCard } from "@/components/dashboard-shell";
 import { Button } from "@/components/ui/button";
-import { ProductCard } from "@/components/product-card";
+import { ProductGrid } from "@/components/marketplace";
+import { ProductThumb } from "@/components/product-card";
+import { useCart, type CartLine } from "@/lib/cart";
 import { compact, fcfa } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
@@ -38,6 +43,16 @@ import { useAuth, type AppRole } from "@/hooks/useAuth";
 const db = supabase as any;
 
 /* ---------------- helpers ---------------- */
+function slugify(value: string): string {
+  return value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+}
+
 const STATUS_FR: Record<string, string> = {
   active: "Actif",
   pending_verification: "Vérification",
@@ -249,7 +264,7 @@ export function ClientPage({ slug = "" }: { slug?: string }) {
     db
       .from("products")
       .select(
-        "id,name,price,images,status,created_at, stores(store_name,city), categories(name,emoji)",
+        "id,name,price,stock,images,status,created_at,store_id,seller_id, stores(store_name,slug,city), categories(name,slug,emoji)",
       )
       .eq("status", "active")
       .order("created_at", { ascending: false })
@@ -260,7 +275,7 @@ export function ClientPage({ slug = "" }: { slug?: string }) {
       ? db
           .from("favorites")
           .select(
-            "id, product_id, products(id,name,price,images, categories(name,emoji), stores(store_name,city))",
+            "id, product_id, products(id,name,price,images,store_id,seller_id, categories(name,slug,emoji), stores(store_name,slug,city))",
           )
           .eq("user_id", uid)
       : Promise.resolve({ data: [] }),
@@ -278,12 +293,17 @@ export function ClientPage({ slug = "" }: { slug?: string }) {
   );
 
   const toCard = (p: any) => ({
+    id: p.id,
     name: p.name,
     category: p.categories?.name ?? "Produit",
     store: p.stores?.store_name ?? "Boutique",
+    storeSlug: p.stores?.slug ?? null,
+    storeId: p.store_id ?? null,
+    sellerId: p.seller_id ?? null,
     city: p.stores?.city ?? "—",
     price: Number(p.price ?? 0),
-    image: p.images?.[0] ?? "/favicon.ico",
+    image: p.images?.[0] ?? "",
+    emoji: p.categories?.emoji ?? null,
   });
 
   if (slug === "explorer") {
@@ -310,11 +330,7 @@ export function ClientPage({ slug = "" }: { slug?: string }) {
             Chargement du catalogue…
           </p>
         ) : items.length ? (
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
-            {items.map((p) => (
-              <ProductCard key={p.name + p.price} product={p} />
-            ))}
-          </div>
+          <ProductGrid products={items} />
         ) : (
           <EmptyLike
             title={needle ? "Aucun résultat" : "Aucun produit pour le moment"}
@@ -340,11 +356,7 @@ export function ClientPage({ slug = "" }: { slug?: string }) {
             Chargement de vos favoris…
           </p>
         ) : items.length ? (
-          <div className="grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-3">
-            {items.map((p) => (
-              <ProductCard key={p.name + p.price} product={p} />
-            ))}
-          </div>
+          <ProductGrid products={items} columns={3} />
         ) : (
           <EmptyLike
             title="Aucun favori"
@@ -358,11 +370,7 @@ export function ClientPage({ slug = "" }: { slug?: string }) {
   if (slug === "panier") {
     return (
       <DashboardShell role="client" title={titleOf(slug)}>
-        <EmptyLike
-          title="Votre panier vous attend"
-          text="Les produits ajoutés apparaîtront ici. Explorez les créations de nos fabricants."
-          icon={ShoppingBag}
-        />
+        <CartPanel />
       </DashboardShell>
     );
   }
@@ -441,12 +449,202 @@ export function ClientPage({ slug = "" }: { slug?: string }) {
           <h2 className="mt-1 text-xl font-bold">À découvrir aujourd'hui</h2>
         </div>
       </div>
-      <div className="mt-4 grid grid-cols-2 gap-3 sm:gap-5 xl:grid-cols-4">
-        {(catalog.data ?? []).slice(0, 4).map((p: any) => (
-          <ProductCard key={p.id} product={toCard(p)} />
-        ))}
+      <div className="mt-4">
+        <ProductGrid products={(catalog.data ?? []).slice(0, 4).map(toCard)} />
       </div>
     </DashboardShell>
+  );
+}
+
+/* ---------------- PANIER ---------------- */
+function CartPanel() {
+  const cart = useCart();
+  const { user, profile } = useAuth();
+  const queryClient = useQueryClient();
+  const [address, setAddress] = useState("");
+  const [phone, setPhone] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    const city = profile?.city ?? "";
+    const tel = profile?.phone ?? "";
+    setAddress((value) => (value ? value : city));
+    setPhone((value) => (value ? value : tel));
+  }, [profile?.city, profile?.phone]);
+
+  async function placeOrder() {
+    if (!user) {
+      toast.error("Connectez-vous pour finaliser votre commande.");
+      return;
+    }
+    if (!cart.items.length) return;
+    if (!address.trim()) {
+      toast.error("Indiquez une adresse de livraison.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const groups = new Map<string, CartLine[]>();
+      for (const line of cart.items) {
+        const key = line.storeId ?? "sans-boutique";
+        groups.set(key, [...(groups.get(key) ?? []), line]);
+      }
+      for (const [storeKey, lines] of groups) {
+        const total = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
+        const { data, error } = await db
+          .from("orders")
+          .insert({
+            customer_id: user.id,
+            store_id: storeKey === "sans-boutique" ? null : storeKey,
+            seller_id: lines[0]?.sellerId ?? null,
+            total_amount: total,
+            delivery_address: address.trim(),
+            delivery_phone: phone.trim() || null,
+            status: "pending",
+          })
+          .select("id")
+          .single();
+        if (error) throw error;
+        const orderId = (data as { id: string }).id;
+        const { error: itemsError } = await db.from("order_items").insert(
+          lines.map((line) => ({
+            order_id: orderId,
+            product_id: line.productId,
+            product_name: line.name,
+            quantity: line.quantity,
+            unit_price: line.price,
+          })),
+        );
+        if (itemsError) throw itemsError;
+      }
+      cart.clear();
+      toast.success("Commande envoyée ! Le vendeur vous contactera pour la livraison.");
+      void queryClient.invalidateQueries({ queryKey: ["client-orders"] });
+    } catch {
+      toast.error("La commande n'a pas pu être envoyée. Réessayez.");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  if (!cart.items.length) {
+    return (
+      <EmptyLike
+        title="Votre panier vous attend"
+        text="Les produits ajoutés apparaîtront ici. Explorez les créations de nos fabricants."
+        icon={ShoppingBag}
+        action={
+          <Button asChild variant="hero">
+            <Link to="/explorer">Explorer les produits</Link>
+          </Button>
+        }
+      />
+    );
+  }
+
+  return (
+    <div className="grid gap-5 lg:grid-cols-[1.6fr_1fr] lg:items-start">
+      <div className="divide-y overflow-hidden rounded-xl border bg-card shadow-card">
+        {cart.items.map((line) => (
+          <div key={line.productId} className="flex gap-4 p-4">
+            <div className="size-20 shrink-0 overflow-hidden rounded-lg border">
+              <ProductThumb image={line.image} name={line.name} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="truncate font-bold">{line.name}</p>
+              <p className="text-xs text-muted-foreground">{line.storeName ?? "Boutique"}</p>
+              <p className="mt-1 text-sm font-semibold">{fcfa(line.price)}</p>
+              <div className="mt-2 flex flex-wrap items-center gap-3">
+                <div className="flex items-center rounded-lg border">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Diminuer la quantité"
+                    onClick={() => cart.setQuantity(line.productId, line.quantity - 1)}
+                  >
+                    <Minus />
+                  </Button>
+                  <span className="w-8 text-center text-sm font-bold">{line.quantity}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Augmenter la quantité"
+                    onClick={() => cart.setQuantity(line.productId, line.quantity + 1)}
+                  >
+                    <Plus />
+                  </Button>
+                </div>
+                <Button variant="ghost" size="sm" onClick={() => cart.remove(line.productId)}>
+                  <Trash2 /> Retirer
+                </Button>
+              </div>
+            </div>
+            <p className="hidden shrink-0 text-sm font-bold sm:block">
+              {fcfa(line.price * line.quantity)}
+            </p>
+          </div>
+        ))}
+      </div>
+
+      <div className="rounded-xl border bg-card p-5 shadow-card">
+        <h2 className="text-lg font-bold">Récapitulatif</h2>
+        <div className="mt-4 flex justify-between text-sm">
+          <span>Sous-total</span>
+          <strong>{fcfa(cart.total)}</strong>
+        </div>
+        <div className="mt-2 flex justify-between text-sm text-muted-foreground">
+          <span>Livraison</span>
+          <span>À convenir avec le vendeur</span>
+        </div>
+        <div className="mt-4 flex justify-between border-t pt-4">
+          <span className="font-bold">Total</span>
+          <strong className="text-primary-deep">{fcfa(cart.total)}</strong>
+        </div>
+
+        <div className="mt-5 space-y-3">
+          <div>
+            <label
+              htmlFor="cart-address"
+              className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Adresse de livraison
+            </label>
+            <textarea
+              id="cart-address"
+              value={address}
+              onChange={(event) => setAddress(event.target.value)}
+              rows={3}
+              placeholder="Quartier, rue, repère…"
+              className="mt-1 w-full rounded-lg border bg-background p-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <div>
+            <label
+              htmlFor="cart-phone"
+              className="text-xs font-bold uppercase tracking-[0.12em] text-muted-foreground"
+            >
+              Téléphone de contact
+            </label>
+            <input
+              id="cart-phone"
+              value={phone}
+              onChange={(event) => setPhone(event.target.value)}
+              placeholder="+223 70 00 00 00"
+              className="mt-1 h-11 w-full rounded-lg border bg-background px-3 text-sm outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+          <Button variant="hero" className="w-full" disabled={submitting} onClick={placeOrder}>
+            {submitting ? "Envoi…" : "Passer commande"}
+          </Button>
+          <Button variant="ghost" className="w-full" onClick={() => cart.clear()}>
+            Vider le panier
+          </Button>
+          <p className="text-center text-xs text-muted-foreground">
+            Le paiement se fait directement avec le vendeur à la livraison.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -535,9 +733,20 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
 
   async function saveStore(input: { store_name: string; city: string; description: string }) {
     if (!uid) return;
+    const baseSlug = slugify(input.store_name) || "boutique";
+    let slug: string = storeRow?.slug ?? "";
+    if (!slug) {
+      const { data: existing } = await db
+        .from("stores")
+        .select("id")
+        .eq("slug", baseSlug)
+        .maybeSingle();
+      slug = existing ? `${baseSlug}-${Math.random().toString(36).slice(2, 6)}` : baseSlug;
+    }
     const payload = {
       owner_id: uid,
       store_name: input.store_name.trim(),
+      slug,
       city: input.city.trim() || null,
       description: input.description.trim() || null,
       status: "pending" as const,

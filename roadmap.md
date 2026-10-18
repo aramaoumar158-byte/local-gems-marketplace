@@ -34,5 +34,16 @@ Nom officiel exact à utiliser partout : **ANW KA SUKU**
 - [x] Admin: dashboard, utilisateurs, vendeurs, clients, boutiques, produits, commandes, finances, statistiques
 - [x] Branchement des écrans Client & Vendeur sur les données réelles (Supabase : catalogue actif, favoris, commandes, boutique & produits, ventes/revenus, métriques 7 jours) — admin déjà branché
 
+## Vitrine publique & achats
+- [x] Accueil public branché sur les données réelles : produits à la une, catégories, boutiques, recherche
+- [x] Catalogue public `/explorer` avec recherche (`?q=`) et filtre par catégorie (`?cat=`)
+- [x] Fiche produit `/produit/:id` (galerie, quantité, stock, favori, panier, boutique vendeur)
+- [x] Page boutique `/boutique/:slug` (repli sur l'identifiant si la boutique n'a pas de slug)
+- [x] Panier client en stockage local : badge d'en-tête, quantités, total en FCFA
+- [x] Passage de commande : création `orders` + `order_items`, groupée par boutique, statut « en attente »
+- [x] Visuel de repli (emoji de catégorie) pour les produits sans photo
+- [ ] Messagerie client ↔ vendeur (`conversations` / `messages`)
+- [ ] Commission plateforme et décrément du stock côté serveur (aujourd'hui : montant transmis par le client, stock inchangé)
+
 ## Plus tard (hors sprint 1)
 - Mobile Money, wallet, retraits, commissions, messagerie temps réel

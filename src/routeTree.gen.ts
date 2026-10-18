@@ -14,11 +14,14 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CompteSuspenduRouteImport } from './routes/compte-suspendu'
 import { Route as ConditionsRouteImport } from './routes/conditions'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
+import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
+import { Route as BoutiqueSlugRouteImport } from './routes/boutique.$slug'
 import { Route as ClientIndexRouteImport } from './routes/client.index'
 import { Route as ClientSplatRouteImport } from './routes/client.$'
+import { Route as ProduitIdRouteImport } from './routes/produit.$id'
 import { Route as SellerIndexRouteImport } from './routes/seller.index'
 import { Route as SellerSplatRouteImport } from './routes/seller.$'
 
@@ -47,6 +50,11 @@ const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
   path: '/confidentialite',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ExplorerRoute = ExplorerRouteImport.update({
+  id: '/explorer',
+  path: '/explorer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerificationRoute = VerificationRouteImport.update({
   id: '/verification',
   path: '/verification',
@@ -62,6 +70,11 @@ const AdminSplatRoute = AdminSplatRouteImport.update({
   path: '/admin/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BoutiqueSlugRoute = BoutiqueSlugRouteImport.update({
+  id: '/boutique/$slug',
+  path: '/boutique/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ClientIndexRoute = ClientIndexRouteImport.update({
   id: '/client/',
   path: '/client/',
@@ -70,6 +83,11 @@ const ClientIndexRoute = ClientIndexRouteImport.update({
 const ClientSplatRoute = ClientSplatRouteImport.update({
   id: '/client/$',
   path: '/client/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProduitIdRoute = ProduitIdRouteImport.update({
+  id: '/produit/$id',
+  path: '/produit/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SellerIndexRoute = SellerIndexRouteImport.update({
@@ -89,9 +107,12 @@ export interface FileRoutesByFullPath {
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
+  '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
+  '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
+  '/produit/$id': typeof ProduitIdRoute
   '/seller/$': typeof SellerSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/client/': typeof ClientIndexRoute
@@ -103,9 +124,12 @@ export interface FileRoutesByTo {
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
+  '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
+  '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
+  '/produit/$id': typeof ProduitIdRoute
   '/seller/$': typeof SellerSplatRoute
   '/admin': typeof AdminIndexRoute
   '/client': typeof ClientIndexRoute
@@ -118,9 +142,12 @@ export interface FileRoutesById {
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
+  '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
+  '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
+  '/produit/$id': typeof ProduitIdRoute
   '/seller/$': typeof SellerSplatRoute
   '/admin/': typeof AdminIndexRoute
   '/client/': typeof ClientIndexRoute
@@ -134,9 +161,12 @@ export interface FileRouteTypes {
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
+    | '/explorer'
     | '/verification'
     | '/admin/$'
+    | '/boutique/$slug'
     | '/client/$'
+    | '/produit/$id'
     | '/seller/$'
     | '/admin/'
     | '/client/'
@@ -148,9 +178,12 @@ export interface FileRouteTypes {
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
+    | '/explorer'
     | '/verification'
     | '/admin/$'
+    | '/boutique/$slug'
     | '/client/$'
+    | '/produit/$id'
     | '/seller/$'
     | '/admin'
     | '/client'
@@ -162,9 +195,12 @@ export interface FileRouteTypes {
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
+    | '/explorer'
     | '/verification'
     | '/admin/$'
+    | '/boutique/$slug'
     | '/client/$'
+    | '/produit/$id'
     | '/seller/$'
     | '/admin/'
     | '/client/'
@@ -177,9 +213,12 @@ export interface RootRouteChildren {
   CompteSuspenduRoute: typeof CompteSuspenduRoute
   ConditionsRoute: typeof ConditionsRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
+  ExplorerRoute: typeof ExplorerRoute
   VerificationRoute: typeof VerificationRoute
   AdminSplatRoute: typeof AdminSplatRoute
+  BoutiqueSlugRoute: typeof BoutiqueSlugRoute
   ClientSplatRoute: typeof ClientSplatRoute
+  ProduitIdRoute: typeof ProduitIdRoute
   SellerSplatRoute: typeof SellerSplatRoute
   AdminIndexRoute: typeof AdminIndexRoute
   ClientIndexRoute: typeof ClientIndexRoute
@@ -223,6 +262,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/explorer': {
+      id: '/explorer'
+      path: '/explorer'
+      fullPath: '/explorer'
+      preLoaderRoute: typeof ExplorerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verification': {
       id: '/verification'
       path: '/verification'
@@ -244,6 +290,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/boutique/$slug': {
+      id: '/boutique/$slug'
+      path: '/boutique/$slug'
+      fullPath: '/boutique/$slug'
+      preLoaderRoute: typeof BoutiqueSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/client/': {
       id: '/client/'
       path: '/client'
@@ -256,6 +309,13 @@ declare module '@tanstack/react-router' {
       path: '/client/$'
       fullPath: '/client/$'
       preLoaderRoute: typeof ClientSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/produit/$id': {
+      id: '/produit/$id'
+      path: '/produit/$id'
+      fullPath: '/produit/$id'
+      preLoaderRoute: typeof ProduitIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/seller/': {
@@ -281,9 +341,12 @@ const rootRouteChildren: RootRouteChildren = {
   CompteSuspenduRoute: CompteSuspenduRoute,
   ConditionsRoute: ConditionsRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
+  ExplorerRoute: ExplorerRoute,
   VerificationRoute: VerificationRoute,
   AdminSplatRoute: AdminSplatRoute,
+  BoutiqueSlugRoute: BoutiqueSlugRoute,
   ClientSplatRoute: ClientSplatRoute,
+  ProduitIdRoute: ProduitIdRoute,
   SellerSplatRoute: SellerSplatRoute,
   AdminIndexRoute: AdminIndexRoute,
   ClientIndexRoute: ClientIndexRoute,
