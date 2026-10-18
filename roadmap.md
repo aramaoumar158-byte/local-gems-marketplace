@@ -28,11 +28,11 @@ Nom officiel exact à utiliser partout : **ANW KA SUKU**
 
 ## Interfaces
 - [x] Administrator audit: immutable records, actor/target snapshots, searchable paginated review and database authorization
-- [ ] Administrator audit end-to-end verification — blocked: no administrator account exists; sign in with an internally authorized administrator
+- [ ] Administrator audit end-to-end verification — blocked: no administrator account exists; sign in with an internally authorized administrator (débloquable via `scripts/promote-super-admin.sql`)
 - [x] Client: dashboard, explorer, favoris, panier, commandes, messages, profil
 - [x] Vendeur: dashboard, boutique, produits, ajouter produit, commandes, messages, ventes, revenus, profil
 - [x] Admin: dashboard, utilisateurs, vendeurs, clients, boutiques, produits, commandes, finances, statistiques
+- [x] Branchement des écrans Client & Vendeur sur les données réelles (Supabase : catalogue actif, favoris, commandes, boutique & produits, ventes/revenus, métriques 7 jours) — admin déjà branché
 
 ## Plus tard (hors sprint 1)
 - Mobile Money, wallet, retraits, commissions, messagerie temps réel
-- Branchement des écrans sur les données réelles (actuellement données de démonstration)
