@@ -329,7 +329,8 @@ function SecurityPage() {
   const attempts = (log.data ?? []).filter((l) => l.action === "UNAUTHORIZED_ATTEMPT");
   const pend = (t: string) => (reps.data ?? []).filter((r) => r.target_type === t && r.status === "pending").length;
   return <DashboardShell role="admin" title="Sécurité & audit">
-    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5"><MetricCard label="Comptes signalés" value={String(pend("user"))} note="En attente" icon={Users} /><MetricCard label="Produits signalés" value={String(pend("product"))} note="En attente" icon={Package} accent /><MetricCard label="Boutiques signalées" value={String(pend("store"))} note="En attente" icon={Store} /><MetricCard label="Activités suspectes" value={String(pend("activity"))} note="À examiner" icon={ShieldAlert} accent /><MetricCard label="Accès refusés" value={String(attempts.length)} note="Tentatives tracées" icon={Lock} /></div>
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5"><MetricCard label="Comptes signalés" value={String(pend("user"))} note="En attente" icon={Users} /><MetricCard label="Produits signalés" value={String(pend("product"))} note="En attente" icon={Package} accent /><MetricCard label="Boutiques signalées" value={String(pend("store"))} note="En attente" icon={Store} /><MetricCard label="Activités suspectes" value={String(pend("activity"))} note="À examiner" icon={ShieldAlert} accent /><MetricCard label="Accès refusés" value={String(attempts.length)} note="Tentatives journalisées" icon={Lock} /></div>
+    <p className="mt-3 text-xs text-muted-foreground">Les appels non autorisés sont rejetés directement par la base, sans créer de ligne dans le journal (protection contre le remplissage abusif). Ce compteur reflète les tentatives historiquement journalisées.</p>
     <div className="mt-5 grid gap-4 lg:grid-cols-3">
       <div className="lg:col-span-2"><Panel title="Journal d'audit administratif" kicker="Historique immuable">
         <AdminAuditLog />

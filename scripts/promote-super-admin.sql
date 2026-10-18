@@ -53,21 +53,27 @@ BEGIN
     RAISE EXCEPTION 'Aucun compte trouvé. Inscrivez d''abord le compte via l''application, puis relisez v_phone / v_email.';
   END IF;
 
-  -- --- Activer le compte puis attribuer le rôle ------------------------
+  -- --- Activer le compte puis attribuer les rôles ----------------------
+  -- 'super_admin' : accès complet, y compris aux paramètres sensibles.
+  -- 'admin'       : rôle opérationnel explicitement testé par certaines
+  --                 policies RLS historiques. Les deux sont attribués pour
+  --                 rester fonctionnel même si la migration d'alignement
+  --                 (drizzle/migrations/0003_align_admin_predicates.sql)
+  --                 n'a pas encore été appliquée.
   UPDATE public.profiles
      SET status = 'active',
          phone_verified = CASE WHEN phone IS NOT NULL THEN true ELSE phone_verified END
    WHERE id = v_user_id;
 
-  IF NOT EXISTS (
-    SELECT 1 FROM public.user_roles
-     WHERE user_id = v_user_id AND role = 'super_admin'
-  ) THEN
-    INSERT INTO public.user_roles (user_id, role)
-    VALUES (v_user_id, 'super_admin');
-  END IF;
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (v_user_id, 'admin')
+  ON CONFLICT (user_id, role) DO NOTHING;
 
-  RAISE NOTICE 'Compte promu super_admin : %', v_user_id;
+  INSERT INTO public.user_roles (user_id, role)
+  VALUES (v_user_id, 'super_admin')
+  ON CONFLICT (user_id, role) DO NOTHING;
+
+  RAISE NOTICE 'Compte promu admin + super_admin : %', v_user_id;
 END $$;
 
 -- =====================================================================

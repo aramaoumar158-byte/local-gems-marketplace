@@ -22,6 +22,13 @@
       "when": 1792241654427,
       "tag": "0002_audit_anonymous_privilege_lockdown",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792380000000,
+      "tag": "0003_align_admin_predicates",
+      "breakpoints": true
     }
   ]
 }
