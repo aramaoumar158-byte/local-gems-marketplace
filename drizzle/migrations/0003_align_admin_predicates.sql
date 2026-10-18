@@ -2,24 +2,46 @@
 -- ANW KA SUKU — 0003 : alignement des prédicats d'administration
 -- =====================================================================
 -- OBJET
---   Les policies RLS historiques testaient private.has_role(auth.uid(),
---   'admin'). Cette fonction compare EXACTEMENT (role = 'admin') : elle ne
---   reconnaît donc PAS le rôle 'super_admin'.
+--   Les policies RLS et le trigger d'administration historiques testaient
+--   private.has_role(auth.uid(), 'admin'). Cette fonction compare
+--   EXACTEMENT (role = 'admin') : elle ne reconnaît PAS le rôle
+--   'super_admin'.
 --
---   Conséquence observée : un compte promu super_admin via
---   scripts/promote-super-admin.sql franchissait la garde d'affichage (le
---   hook mappe super_admin -> admin) mais se voyait refuser toutes les
---   lectures protégées, et le trigger de protection des champs privilégiés
---   annulait silencieusement ses suspensions d'utilisateurs.
+-- ÉTAT VÉRIFIÉ EN DIRECT (18/10/2026, compte 'super_admin' réel) :
+--   - LECTURE : AUCUNE restriction observée. Les policies sont permissives
+--     et s'additionnent ; celles fondées sur private.is_admin() — qui
+--     accepte DÉJÀ 'admin' ET 'super_admin' (drizzle/migrations/0000,
+--     ligne 17) — suffisent. Le blocage de lecture initialement soupçonné
+--     n'a PAS été reproduit.
+--   - TRIGGER : le défaut est réel et latent.
+--     public.protect_profile_privileged_fields() utilisant
+--     has_role(...,'admin'), un compte 'super_admin' SANS le rôle 'admin'
+--     verrait ses changements de status/phone_verified/email_verified
+--     silencieusement annulés (ex. « suspendre un utilisateur » sans effet).
+--     Non déclenché à ce jour : un seul compte existe et l'auto-suspension
+--     est interdite par admin_action().
+--   - CONTEXTE NON AUTHENTIFIÉ : auth.uid() est NULL dans l'éditeur SQL
+--     Supabase, donc has_role(NULL,'admin') est faux et le trigger annulait
+--     aussi les promotions exécutées à la main. C'est pourquoi le statut
+--     restait 'pending_verification' après scripts/promote-super-admin.sql.
 --
 -- CORRECTIF
---   Utiliser private.is_admin() (admin OU super_admin) et exiger un compte
---   non suspendu via private.is_account_usable().
+--   1) Prédicat unique et explicite private.is_admin() (admin OU super_admin)
+--      pour toutes les policies d'administration.
+--   2) Trigger : le contexte non authentifié (auth.uid() IS NULL : éditeur
+--      SQL, service_role) est désormais considéré comme de confiance, et le
+--      prédicat administrateur y ajoute private.is_account_usable() — un
+--      administrateur suspendu ne peut donc plus réactiver son propre compte.
+--   3) Ajout de private.is_account_usable() aux policies (B2) : un
+--      administrateur suspendu perd réellement ses accès. C'est le seul
+--      durcissement de comportement effectif sur la base actuelle.
 --
 -- PORTÉE / IMPACT
 --   Migration ADDITIVE et IDEMPOTENTE :
 --     - aucune table, colonne, ligne ni donnée n'est supprimée ou modifiée ;
 --     - seules des policies RLS et une fonction de trigger sont redéfinies ;
+--     - les clauses d'accès personnel (id/user_id/seller_id/customer_id =
+--       auth.uid()) sont conservées à l'identique ;
 --     - ré-exécuter ce fichier n'a aucun effet de bord.
 --   Réversible : réappliquer la définition d'origine (has_role) si besoin.
 --
@@ -28,14 +50,22 @@
 
 -- ---------------------------------------------------------------------
 -- 1. Champs privilégiés du profil (status, phone_verified, email_verified)
---    Un administrateur (admin ou super_admin) doit pouvoir suspendre un
---    compte ; un compte suspendu ne peut plus modifier les siens.
+--    - Contexte non authentifié (auth.uid() IS NULL : éditeur SQL Supabase,
+--      service_role) : de confiance, la modification passe. C'est ce qui
+--      permet à scripts/promote-super-admin.sql de fonctionner réellement.
+--    - Administrateur (admin OU super_admin) NON suspendu : peut suspendre
+--      ou réactiver un compte.
+--    - Tout autre compte, et tout administrateur suspendu : les champs
+--      privilégiés sont restaurés (aucune auto-réactivation possible).
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE FUNCTION public.protect_profile_privileged_fields()
 RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public
 AS $$
 BEGIN
-  IF NOT private.is_admin(auth.uid()) THEN
+  IF auth.uid() IS NULL THEN
+    RETURN NEW;
+  END IF;
+  IF NOT (private.is_admin(auth.uid()) AND private.is_account_usable(auth.uid())) THEN
     NEW.status := OLD.status;
     NEW.phone_verified := OLD.phone_verified;
     NEW.email_verified := OLD.email_verified;

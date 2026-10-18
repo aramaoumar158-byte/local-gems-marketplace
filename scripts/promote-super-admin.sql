@@ -4,6 +4,13 @@
 -- Débloque : "Administrator audit end-to-end verification" (roadmap)
 --            — aucun compte administrateur n'existe encore.
 --
+-- PRÉ-REQUIS : appliquer d'abord
+--   drizzle/migrations/0003_align_admin_predicates.sql
+--   Sans cette migration, le trigger protect_profile_privileged_fields()
+--   annule le passage à status = 'active' effectué plus bas : auth.uid() est
+--   NULL dans l'éditeur SQL, donc l'ancien prédicat has_role(NULL,'admin')
+--   était faux. Le compte restait alors en 'pending_verification'.
+--
 -- Procédure :
 --   1. Créer le compte via l'application (inscription normale,
 --      rôle Client ou Vendeur — le rôle Super Admin n'est JAMAIS
