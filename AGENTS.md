@@ -11,3 +11,5 @@
 
 - Sensitive administrator mutations and their audit records must commit atomically through database RPCs; audit records are append-only and readable only by non-suspended administrators.
 - Audit snapshots project only relevant administrative fields, never entire profiles or secret configuration values, to minimize sensitive data retention.
+- Manual audit AI review reloads selected event IDs through the caller's RLS client and revalidates non-suspended administrator roles server-side; models receive allowlisted, contact-free snapshots and never execute administrative actions.
+- AI review uses request-local Responses streaming helpers under src/lib/ai and a raw HTTP server route; terminal provider denial state is durable and blocks subsequent calls until access is restored.

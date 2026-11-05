@@ -65,6 +65,24 @@ export type Database = {
         }
         Relationships: []
       }
+      audit_ai_access_state: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          reason: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string
+        }
+        Relationships: []
+      }
       categories: {
         Row: {
           created_at: string

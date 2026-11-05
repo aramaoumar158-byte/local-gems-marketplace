@@ -6,6 +6,8 @@ import type { Database } from '@/integrations/supabase/types';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { auditChanges, auditDetails, auditValue } from '@/lib/audit';
+import { Checkbox } from '@/components/ui/checkbox';
+import { AdminAuditReview } from '@/components/admin-audit-review';
 
 type Entry = Database['public']['Tables']['admin_audit_log']['Row'];
 const PAGE_SIZE = 25;
@@ -16,6 +18,7 @@ export function AdminAuditLog() {
   const [search, setSearch] = useState('');
   const [type, setType] = useState('all');
   const [selected, setSelected] = useState<Entry | null>(null);
+  const [reviewEntries, setReviewEntries] = useState<Entry[]>([]);
   const log = useQuery({ queryKey: ['admin', 'audit-history', page, search, type], queryFn: async () => {
     let query = supabase.from('admin_audit_log').select('*', { count: 'exact' }).order('created_at', { ascending: false }).order('id', { ascending: false });
     if (type !== 'all') query = query.eq('target_type', type);
@@ -38,6 +41,8 @@ export function AdminAuditLog() {
       {!log.data.rows.length && <p className="py-8 text-center text-sm text-muted-foreground">Aucune action enregistrée.</p>}
       <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground"><span>{log.data.count} action(s) · Page {page + 1}</span><div className="flex gap-1"><Button size="icon" variant="outline" aria-label="Page précédente" disabled={page === 0} onClick={() => setPage(page - 1)}><ChevronLeft /></Button><Button size="icon" variant="outline" aria-label="Page suivante" disabled={(page + 1) * PAGE_SIZE >= log.data.count} onClick={() => setPage(page + 1)}><ChevronRight /></Button></div></div>
     </>}
+    {!log.isError && !log.isPending && <div className="space-y-3 border-t pt-4"><h3 className="text-sm font-semibold">Événements à examiner (50 maximum)</h3><div className="flex flex-wrap gap-2"><Button variant="outline" size="sm" disabled={!log.data.rows.length} onClick={() => setReviewEntries(rows => [...rows, ...log.data.rows.filter(entry => !rows.some(row => row.id === entry.id))].slice(0, 50))}>Sélectionner cette page</Button><Button variant="ghost" size="sm" disabled={!reviewEntries.length} onClick={() => setReviewEntries([])}>Effacer la sélection</Button></div><div className="max-h-48 space-y-2 overflow-y-auto">{log.data.rows.map(entry => { const checked = reviewEntries.some(row => row.id === entry.id); return <label key={entry.id} className="flex items-start gap-2 text-xs"><Checkbox aria-label={`Analyser ${entry.action} ${entry.id}`} checked={checked} disabled={!checked && reviewEntries.length >= 50} onCheckedChange={value => setReviewEntries(rows => value === true ? [...rows, entry] : rows.filter(row => row.id !== entry.id))} /><span className="min-w-0 break-words">{entry.action} · {timestamp(entry.created_at)} · {auditValue(auditDetails(entry.metadata)['target_label'] ?? entry.target_id)}</span></label>; })}</div></div>}
+    <AdminAuditReview eventIds={reviewEntries.map(entry => entry.id)} onInspect={id => setSelected(reviewEntries.find(entry => entry.id === id) ?? log.data?.rows.find(entry => entry.id === id) ?? null)} />
     <Dialog open={selected !== null} onOpenChange={open => { if (!open) setSelected(null); }}><DialogContent className="max-h-[85dvh] max-w-2xl overflow-y-auto"><DialogHeader><DialogTitle>Détails de l'action</DialogTitle><DialogDescription>{selected?.action}</DialogDescription></DialogHeader>{selected && <div className="space-y-4 text-sm"><dl className="grid gap-3 break-words">{[['Administrateur',auditValue(details['actor_name'] ?? selected.admin_id)],['Identifiant administrateur',selected.admin_id ?? '—'],['Rôle',auditValue(details['actor_role'])],['Cible',auditValue(details['target_label'] ?? selected.target_id)],['Identifiant cible',selected.target_id ?? '—'],['Type',selected.target_type],['Date et heure',timestamp(selected.created_at)],['Référence',selected.id]].map(([label,value]) => <div key={label}><dt className="text-xs text-muted-foreground">{label}</dt><dd className="mt-1 font-medium">{value}</dd></div>)}</dl>{changes.length > 0 && <div className="space-y-3 border-t pt-4"><h3 className="font-semibold">Modifications</h3>{changes.map(change => <div key={change.key} className="break-words"><p className="font-mono text-xs">{change.key}</p><p className="text-muted-foreground">Avant : {change.before}</p><p>Après : {change.after}</p></div>)}</div>}{details['note'] && <p className="break-words">Motif : {auditValue(details['note'])}</p>}<details className="border-t pt-3"><summary className="cursor-pointer font-semibold">Détails enregistrés</summary><pre className="mt-2 whitespace-pre-wrap break-all rounded-lg bg-secondary p-3 text-xs">{JSON.stringify(selected.metadata,null,2)}</pre></details></div>}</DialogContent></Dialog>
   </div>;
 }

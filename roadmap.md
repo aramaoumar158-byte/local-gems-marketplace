@@ -27,6 +27,7 @@ Nom officiel exact à utiliser partout : **ANW KA SUKU**
 - [ ] Vérification email — prévue après activation de l'envoi d'emails
 
 ## Interfaces
+- [ ] Analyse IA manuelle des événements d’audit : sélection, contrôle administrateur, explications et vérification réelle
 - [x] Administrator audit: immutable records, actor/target snapshots, searchable paginated review and database authorization
 - [ ] Administrator audit end-to-end verification — blocked: no administrator account exists; sign in with an internally authorized administrator (débloquable via `scripts/promote-super-admin.sql`)
 - [x] Client: dashboard, explorer, favoris, panier, commandes, messages, profil
