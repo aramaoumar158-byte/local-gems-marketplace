@@ -18,6 +18,7 @@ import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
+import { Route as ApiAuditReviewRouteImport } from './routes/api/audit-review'
 import { Route as BoutiqueSlugRouteImport } from './routes/boutique.$slug'
 import { Route as ClientIndexRouteImport } from './routes/client.index'
 import { Route as ClientSplatRouteImport } from './routes/client.$'
@@ -70,6 +71,11 @@ const AdminSplatRoute = AdminSplatRouteImport.update({
   path: '/admin/$',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAuditReviewRoute = ApiAuditReviewRouteImport.update({
+  id: '/api/audit-review',
+  path: '/api/audit-review',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BoutiqueSlugRoute = BoutiqueSlugRouteImport.update({
   id: '/boutique/$slug',
   path: '/boutique/$slug',
@@ -110,6 +116,7 @@ export interface FileRoutesByFullPath {
   '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
+  '/api/audit-review': typeof ApiAuditReviewRoute
   '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
   '/produit/$id': typeof ProduitIdRoute
@@ -127,6 +134,7 @@ export interface FileRoutesByTo {
   '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
+  '/api/audit-review': typeof ApiAuditReviewRoute
   '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
   '/produit/$id': typeof ProduitIdRoute
@@ -145,6 +153,7 @@ export interface FileRoutesById {
   '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
+  '/api/audit-review': typeof ApiAuditReviewRoute
   '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
   '/produit/$id': typeof ProduitIdRoute
@@ -164,6 +173,7 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/verification'
     | '/admin/$'
+    | '/api/audit-review'
     | '/boutique/$slug'
     | '/client/$'
     | '/produit/$id'
@@ -181,6 +191,7 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/verification'
     | '/admin/$'
+    | '/api/audit-review'
     | '/boutique/$slug'
     | '/client/$'
     | '/produit/$id'
@@ -198,6 +209,7 @@ export interface FileRouteTypes {
     | '/explorer'
     | '/verification'
     | '/admin/$'
+    | '/api/audit-review'
     | '/boutique/$slug'
     | '/client/$'
     | '/produit/$id'
@@ -216,6 +228,7 @@ export interface RootRouteChildren {
   ExplorerRoute: typeof ExplorerRoute
   VerificationRoute: typeof VerificationRoute
   AdminSplatRoute: typeof AdminSplatRoute
+  ApiAuditReviewRoute: typeof ApiAuditReviewRoute
   BoutiqueSlugRoute: typeof BoutiqueSlugRoute
   ClientSplatRoute: typeof ClientSplatRoute
   ProduitIdRoute: typeof ProduitIdRoute
@@ -290,6 +303,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/audit-review': {
+      id: '/api/audit-review'
+      path: '/api/audit-review'
+      fullPath: '/api/audit-review'
+      preLoaderRoute: typeof ApiAuditReviewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/boutique/$slug': {
       id: '/boutique/$slug'
       path: '/boutique/$slug'
@@ -344,6 +364,7 @@ const rootRouteChildren: RootRouteChildren = {
   ExplorerRoute: ExplorerRoute,
   VerificationRoute: VerificationRoute,
   AdminSplatRoute: AdminSplatRoute,
+  ApiAuditReviewRoute: ApiAuditReviewRoute,
   BoutiqueSlugRoute: BoutiqueSlugRoute,
   ClientSplatRoute: ClientSplatRoute,
   ProduitIdRoute: ProduitIdRoute,
