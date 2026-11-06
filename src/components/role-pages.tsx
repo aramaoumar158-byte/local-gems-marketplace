@@ -34,7 +34,7 @@ import { DashboardShell, MetricCard } from "@/components/dashboard-shell";
 import { Button } from "@/components/ui/button";
 import { ProductGrid } from "@/components/marketplace";
 import { ProductThumb } from "@/components/product-card";
-import { useCart, type CartLine } from "@/lib/cart";
+import { useCart } from "@/lib/cart";
 import { compact, fcfa } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
@@ -484,39 +484,14 @@ function CartPanel() {
     }
     setSubmitting(true);
     try {
-      const groups = new Map<string, CartLine[]>();
-      for (const line of cart.items) {
-        const key = line.storeId ?? "sans-boutique";
-        groups.set(key, [...(groups.get(key) ?? []), line]);
-      }
-      for (const [storeKey, lines] of groups) {
-        const total = lines.reduce((sum, line) => sum + line.price * line.quantity, 0);
-        const { data, error } = await db
-          .from("orders")
-          .insert({
-            customer_id: user.id,
-            store_id: storeKey === "sans-boutique" ? null : storeKey,
-            seller_id: lines[0]?.sellerId ?? null,
-            total_amount: total,
-            delivery_address: address.trim(),
-            delivery_phone: phone.trim() || null,
-            status: "pending",
-          })
-          .select("id")
-          .single();
-        if (error) throw error;
-        const orderId = (data as { id: string }).id;
-        const { error: itemsError } = await db.from("order_items").insert(
-          lines.map((line) => ({
-            order_id: orderId,
-            product_id: line.productId,
-            product_name: line.name,
-            quantity: line.quantity,
-            unit_price: line.price,
-          })),
-        );
-        if (itemsError) throw itemsError;
-      }
+      // Le serveur relit les vrais prix, vérifie le stock et calcule la commission (10 %).
+      // Le navigateur n'envoie que les produits et les quantités.
+      const { error } = await db.rpc("place_order", {
+        p_lines: cart.items.map((line) => ({ productId: line.productId, quantity: line.quantity })),
+        p_address: address.trim(),
+        p_phone: phone.trim() || null,
+      });
+      if (error) throw error;
       cart.clear();
       toast.success("Commande envoyée ! Le vendeur vous contactera pour la livraison.");
       void queryClient.invalidateQueries({ queryKey: ["client-orders"] });
