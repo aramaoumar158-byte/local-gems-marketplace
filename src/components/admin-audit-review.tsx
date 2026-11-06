@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { BrainCircuit, Square } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/hooks/useAuth';
+import ReactMarkdown from 'react-markdown';
 
 export function AdminAuditReview({ eventIds, onInspect }: { eventIds: string[]; onInspect: (id: string) => void }) {
   const { session } = useAuth();
@@ -43,6 +44,6 @@ export function AdminAuditReview({ eventIds, onInspect }: { eventIds: string[]; 
     {busy && <p role="status" className="text-sm text-muted-foreground">Analyse en cours…</p>}
     {error && <p role="alert" className="text-sm text-destructive">{error}</p>}
     {reasoning && <details className="text-xs text-muted-foreground"><summary className="cursor-pointer">Notes d’analyse</summary><p className="mt-2 whitespace-pre-wrap break-words">{reasoning}</p></details>}
-    {answer && <div className="space-y-3"><div className="whitespace-pre-wrap break-words text-sm leading-relaxed" aria-live="polite">{answer}</div><details><summary className="cursor-pointer text-xs font-semibold">Événements analysés ({reviewed.length})</summary><div className="mt-2 flex flex-wrap gap-2">{reviewed.map(id => <Button key={id} variant="outline" size="sm" onClick={() => onInspect(id)} className="font-mono text-xs">{id.slice(0, 8)}…</Button>)}</div></details></div>}
+    {answer && <div className="min-w-0 space-y-3"><div className="space-y-3 break-words text-sm leading-relaxed [overflow-wrap:anywhere] [&_h2]:pt-2 [&_h2]:font-bold [&_h3]:font-semibold [&_li]:my-1 [&_ul]:list-disc [&_ul]:pl-4" aria-live="polite"><ReactMarkdown components={{ a: ({ children }) => <span>{children}</span>, img: () => null }}>{answer}</ReactMarkdown></div><details><summary className="cursor-pointer text-xs font-semibold">Événements analysés ({reviewed.length})</summary><div className="mt-2 flex flex-wrap gap-2">{reviewed.map(id => <Button key={id} variant="outline" size="sm" onClick={() => onInspect(id)} className="font-mono text-xs">{id.slice(0, 8)}…</Button>)}</div></details></div>}
   </section>;
 }
