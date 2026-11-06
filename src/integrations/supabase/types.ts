@@ -896,10 +896,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      place_order: {
-        Args: { p_address: string; p_lines: Json; p_phone?: string | null }
-        Returns: Json
-      }
       admin_action: {
         Args: {
           _action: string
