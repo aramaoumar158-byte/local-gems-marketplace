@@ -64,6 +64,7 @@ export async function handleAuditReview(request: Request) {
   // Wait for upstream acceptance, not final output, so HTTP denials keep their status.
   try {
     first = await iterator.next();
+    if (!first.done && first.value.type === 'error') return jsonError(failure?.message ?? 'L’analyse IA n’a pas pu démarrer.', failure?.status ?? 502);
     await gateway.waitForRunId();
     if (failure) return jsonError(failure.message, failure.status);
   } catch {
@@ -80,7 +81,7 @@ export async function handleAuditReview(request: Request) {
         const part = next.value;
         if (part.type === 'text-delta') { hasText = true; send({ type: 'text', text: part.text }); }
         if (part.type === 'reasoning-delta') send({ type: 'reasoning', text: part.text });
-        if (part.type === 'error') { send({ type: 'error', message: failure?.message ?? 'L’analyse a échoué. Aucun résultat fiable n’est disponible.' }); controller.close(); return; }
+        if (part.type === 'error') { send({ type: 'error', message: failure?.message ?? 'L’analyse a échoué. Aucun résultat fiable n’est disponible.' }); return; }
         next = await iterator.next();
       }
       send(hasText ? { type: 'done', count: events.length } : { type: 'error', message: 'Le modèle n’a fourni aucune analyse. Cette demande est terminée.' });

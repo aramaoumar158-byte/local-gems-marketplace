@@ -9,7 +9,7 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "eslint .",
-    "test": "node --test src/lib/audit.test.js",
+    "test": "node --test src/lib/audit.test.js src/lib/audit-review.test.js",
     "format": "prettier --write ."
   },
   "overrides": {
