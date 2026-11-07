@@ -70,7 +70,7 @@ export function photoPathFromUrl(url: string): string | null {
   const marker = `/${BUCKET}/`;
   const i = url.indexOf(marker);
   if (i === -1) return null;
-  return decodeURIComponent(url.slice(i + marker.length).split("?")[0]);
+  return decodeURIComponent(url.slice(i + marker.length).split("?")[0] ?? "");
 }
 
 /** Supprime des photos déjà envoyées (annulation si la fiche produit n'a pas pu être créée). */
