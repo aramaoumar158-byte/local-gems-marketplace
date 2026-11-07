@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { useEffect, useState, type ReactNode } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Area,
@@ -18,6 +18,7 @@ import {
   BarChart3,
   CircleDollarSign,
   Heart,
+  ImagePlus,
   MessageCircle,
   Minus,
   Package,
@@ -27,6 +28,7 @@ import {
   Store,
   Trash2,
   TrendingUp,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +37,12 @@ import { Button } from "@/components/ui/button";
 import { ProductGrid } from "@/components/marketplace";
 import { ProductThumb } from "@/components/product-card";
 import { useCart } from "@/lib/cart";
+import {
+  MAX_PRODUCT_PHOTOS,
+  checkPhoto,
+  removeProductPhotos,
+  uploadProductPhotos,
+} from "@/lib/product-images";
 import { compact, fcfa } from "@/lib/format";
 import { cn } from "@/lib/utils";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
@@ -750,11 +758,19 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
     stock: number;
     description: string;
     category_id: string | null;
-  }) {
-    if (!uid) return;
+    photos: File[];
+  }): Promise<boolean> {
+    if (!uid) return false;
     if (!storeRow) {
       toast.error("Créez d'abord votre boutique.");
-      return;
+      return false;
+    }
+    let uploaded: { urls: string[]; paths: string[] } = { urls: [], paths: [] };
+    try {
+      uploaded = await uploadProductPhotos(uid, input.photos);
+    } catch {
+      toast.error("L'envoi des photos a échoué. Vérifiez votre connexion et réessayez.");
+      return false;
     }
     const { error } = await db.from("products").insert({
       seller_id: uid,
@@ -764,14 +780,17 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
       stock: input.stock,
       description: input.description.trim() || null,
       category_id: input.category_id,
+      images: uploaded.urls,
       status: "pending_review",
     });
     if (error) {
+      await removeProductPhotos(uploaded.paths); // pas de photos orphelines
       toast.error(error.message);
-      return;
+      return false;
     }
     toast.success("Produit envoyé — en attente de modération");
     void qc.invalidateQueries({ queryKey: ["seller-products"] });
+    return true;
   }
 
   if (slug === "boutique") {
@@ -820,7 +839,18 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
                 <tbody>
                   {list.map((p) => (
                     <tr key={p.id} className="border-t">
-                      <td className="px-5 py-4 font-bold">{p.name}</td>
+                      <td className="px-5 py-4 font-bold">
+                        <div className="flex items-center gap-3">
+                          <div className="size-12 shrink-0 overflow-hidden rounded-lg border">
+                            <ProductThumb
+                              image={p.images?.[0]}
+                              emoji={p.categories?.emoji}
+                              name={p.name}
+                            />
+                          </div>
+                          {p.name}
+                        </div>
+                      </td>
                       <td className="px-5 py-4">{p.categories?.name ?? "—"}</td>
                       <td className="px-5 py-4 font-bold">{fcfa(p.price)}</td>
                       <td className="px-5 py-4">{p.stock}</td>
@@ -1096,25 +1126,61 @@ function ProductForm({
     stock: number;
     description: string;
     category_id: string | null;
-  }) => Promise<void>;
+    photos: File[];
+  }) => Promise<boolean>;
   hasStore: boolean;
 }) {
   const cats = useRows("seller-categories", () =>
     db.from("categories").select("id,name,emoji").eq("is_active", true).order("position"),
   );
+  const [photos, setPhotos] = useState<File[]>([]);
+  const [busy, setBusy] = useState(false);
+  const previews = useMemo(() => photos.map((f) => URL.createObjectURL(f)), [photos]);
+  useEffect(() => () => previews.forEach((u) => URL.revokeObjectURL(u)), [previews]);
+
+  function addPhotos(list: FileList | null) {
+    if (!list) return;
+    const next = [...photos];
+    for (const file of Array.from(list)) {
+      if (next.length >= MAX_PRODUCT_PHOTOS) {
+        toast.error(`${MAX_PRODUCT_PHOTOS} photos maximum par produit.`);
+        break;
+      }
+      const problem = checkPhoto(file);
+      if (problem) {
+        toast.error(problem);
+        continue;
+      }
+      next.push(file);
+    }
+    setPhotos(next);
+  }
+
   return (
     <form
       className="mx-auto max-w-3xl rounded-xl border bg-card p-5 shadow-card sm:p-7"
       onSubmit={async (e) => {
         e.preventDefault();
-        const f = new FormData(e.currentTarget);
-        await onSubmit({
-          name: String(f.get("name") ?? ""),
-          price: Number(f.get("price") ?? 0),
-          stock: Number(f.get("stock") ?? 0),
-          description: String(f.get("description") ?? ""),
-          category_id: (f.get("category_id") as string) || null,
-        });
+        if (busy) return;
+        const form = e.currentTarget;
+        const f = new FormData(form);
+        setBusy(true);
+        try {
+          const ok = await onSubmit({
+            name: String(f.get("name") ?? ""),
+            price: Number(f.get("price") ?? 0),
+            stock: Number(f.get("stock") ?? 0),
+            description: String(f.get("description") ?? ""),
+            category_id: (f.get("category_id") as string) || null,
+            photos,
+          });
+          if (ok) {
+            form.reset();
+            setPhotos([]);
+          }
+        } finally {
+          setBusy(false);
+        }
       }}
     >
       {!hasStore && (
@@ -1181,14 +1247,57 @@ function ProductForm({
             className="mt-2 min-h-32 w-full rounded-lg border bg-background p-3 outline-none focus:ring-2 focus:ring-ring"
           />
         </label>
-        <div className="sm:col-span-2 rounded-lg border border-dashed bg-secondary p-8 text-center text-sm text-muted-foreground">
-          <Package className="mx-auto mb-2 size-6" />
-          Ajoutez plusieurs photos du produit (à venir)
+        <div className="sm:col-span-2">
+          <span className="text-sm font-bold">
+            Photos du produit ({photos.length}/{MAX_PRODUCT_PHOTOS})
+          </span>
+          <div className="mt-2 grid grid-cols-3 gap-3 sm:grid-cols-4">
+            {previews.map((src, i) => (
+              <div key={src} className="relative aspect-square overflow-hidden rounded-lg border">
+                <img src={src} alt={`Photo ${i + 1}`} className="size-full object-cover" />
+                {i === 0 && (
+                  <span className="absolute left-1 top-1 rounded bg-background/90 px-1.5 py-0.5 text-[10px] font-bold">
+                    Principale
+                  </span>
+                )}
+                <button
+                  type="button"
+                  aria-label={`Retirer la photo ${i + 1}`}
+                  onClick={() => setPhotos(photos.filter((_, k) => k !== i))}
+                  className="absolute right-1 top-1 grid size-7 place-items-center rounded-full bg-background/90 shadow"
+                >
+                  <X className="size-4" />
+                </button>
+              </div>
+            ))}
+            {photos.length < MAX_PRODUCT_PHOTOS && (
+              <label className="grid aspect-square cursor-pointer place-items-center rounded-lg border border-dashed bg-secondary p-2 text-center text-xs text-muted-foreground">
+                <span>
+                  <ImagePlus className="mx-auto mb-1 size-6" />
+                  Ajouter une photo
+                </span>
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  multiple
+                  className="sr-only"
+                  onChange={(e) => {
+                    addPhotos(e.target.files);
+                    e.target.value = "";
+                  }}
+                />
+              </label>
+            )}
+          </div>
+          <p className="mt-2 text-xs text-muted-foreground">
+            La première photo est celle qui s'affiche dans le catalogue. Les photos sont réduites
+            automatiquement pour un chargement rapide.
+          </p>
         </div>
       </div>
       <div className="mt-6 flex justify-end">
-        <Button type="submit" variant="hero" disabled={!hasStore}>
-          Publier le produit
+        <Button type="submit" variant="hero" disabled={!hasStore || busy}>
+          {busy ? "Envoi en cours…" : "Publier le produit"}
         </Button>
       </div>
     </form>
