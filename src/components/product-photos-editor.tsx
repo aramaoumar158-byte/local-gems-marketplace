@@ -61,7 +61,9 @@ export function ProductPhotosEditor({ product, sellerId, onClose }: Props) {
   }
 
   function makeMain(i: number) {
-    setKept([kept[i], ...kept.filter((_, k) => k !== i)]);
+    const main = kept[i];
+    if (main === undefined) return;
+    setKept([main, ...kept.filter((_, k) => k !== i)]);
   }
 
   async function save() {
