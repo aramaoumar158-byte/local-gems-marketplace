@@ -36,6 +36,7 @@ import { DashboardShell, MetricCard } from "@/components/dashboard-shell";
 import { Button } from "@/components/ui/button";
 import { ProductGrid } from "@/components/marketplace";
 import { ProductThumb } from "@/components/product-card";
+import { ProductPhotosEditor } from "@/components/product-photos-editor";
 import { useCart } from "@/lib/cart";
 import {
   MAX_PRODUCT_PHOTOS,
@@ -691,6 +692,11 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
       return data;
     },
   });
+  const [photoProduct, setPhotoProduct] = useState<{
+    id: string;
+    name: string;
+    images: string[] | null;
+  } | null>(null);
   const products = useRows("seller-products", () =>
     uid
       ? db
@@ -829,7 +835,7 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
               <table className="w-full min-w-[680px] text-left text-sm">
                 <thead className="bg-secondary text-xs uppercase text-muted-foreground">
                   <tr>
-                    {["Produit", "Catégorie", "Prix", "Stock", "Statut"].map((h) => (
+                    {["Produit", "Catégorie", "Prix", "Stock", "Statut", "Photos"].map((h) => (
                       <th key={h} className="px-5 py-4">
                         {h}
                       </th>
@@ -857,6 +863,16 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
                       <td className="px-5 py-4">
                         <Pill s={p.status} />
                       </td>
+                      <td className="px-5 py-4">
+                        <Button
+                          type="button"
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setPhotoProduct(p)}
+                        >
+                          <ImagePlus /> Modifier
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -868,6 +884,13 @@ export function SellerPage({ slug = "" }: { slug?: string }) {
             title="Aucun produit"
             text="Ajoutez votre premier produit pour commencer à vendre."
             icon={Package}
+          />
+        )}
+        {uid && (
+          <ProductPhotosEditor
+            product={photoProduct}
+            sellerId={uid}
+            onClose={() => setPhotoProduct(null)}
           />
         )}
       </DashboardShell>
