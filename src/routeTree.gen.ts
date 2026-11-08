@@ -19,6 +19,7 @@ import { Route as VerificationRouteImport } from './routes/verification'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
 import { Route as ApiAuditReviewRouteImport } from './routes/api/audit-review'
+import { Route as ApiEmailVerificationRouteImport } from './routes/api/email-verification'
 import { Route as BoutiqueSlugRouteImport } from './routes/boutique.$slug'
 import { Route as ClientIndexRouteImport } from './routes/client.index'
 import { Route as ClientSplatRouteImport } from './routes/client.$'
@@ -76,6 +77,11 @@ const ApiAuditReviewRoute = ApiAuditReviewRouteImport.update({
   path: '/api/audit-review',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiEmailVerificationRoute = ApiEmailVerificationRouteImport.update({
+  id: '/api/email-verification',
+  path: '/api/email-verification',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BoutiqueSlugRoute = BoutiqueSlugRouteImport.update({
   id: '/boutique/$slug',
   path: '/boutique/$slug',
@@ -117,6 +123,7 @@ export interface FileRoutesByFullPath {
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/audit-review': typeof ApiAuditReviewRoute
+  '/api/email-verification': typeof ApiEmailVerificationRoute
   '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
   '/produit/$id': typeof ProduitIdRoute
@@ -135,6 +142,7 @@ export interface FileRoutesByTo {
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/audit-review': typeof ApiAuditReviewRoute
+  '/api/email-verification': typeof ApiEmailVerificationRoute
   '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
   '/produit/$id': typeof ProduitIdRoute
@@ -154,6 +162,7 @@ export interface FileRoutesById {
   '/verification': typeof VerificationRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/audit-review': typeof ApiAuditReviewRoute
+  '/api/email-verification': typeof ApiEmailVerificationRoute
   '/boutique/$slug': typeof BoutiqueSlugRoute
   '/client/$': typeof ClientSplatRoute
   '/produit/$id': typeof ProduitIdRoute
@@ -174,6 +183,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/admin/$'
     | '/api/audit-review'
+    | '/api/email-verification'
     | '/boutique/$slug'
     | '/client/$'
     | '/produit/$id'
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/admin/$'
     | '/api/audit-review'
+    | '/api/email-verification'
     | '/boutique/$slug'
     | '/client/$'
     | '/produit/$id'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/verification'
     | '/admin/$'
     | '/api/audit-review'
+    | '/api/email-verification'
     | '/boutique/$slug'
     | '/client/$'
     | '/produit/$id'
@@ -229,6 +241,7 @@ export interface RootRouteChildren {
   VerificationRoute: typeof VerificationRoute
   AdminSplatRoute: typeof AdminSplatRoute
   ApiAuditReviewRoute: typeof ApiAuditReviewRoute
+  ApiEmailVerificationRoute: typeof ApiEmailVerificationRoute
   BoutiqueSlugRoute: typeof BoutiqueSlugRoute
   ClientSplatRoute: typeof ClientSplatRoute
   ProduitIdRoute: typeof ProduitIdRoute
@@ -310,6 +323,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuditReviewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/email-verification': {
+      id: '/api/email-verification'
+      path: '/api/email-verification'
+      fullPath: '/api/email-verification'
+      preLoaderRoute: typeof ApiEmailVerificationRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/boutique/$slug': {
       id: '/boutique/$slug'
       path: '/boutique/$slug'
@@ -365,6 +385,7 @@ const rootRouteChildren: RootRouteChildren = {
   VerificationRoute: VerificationRoute,
   AdminSplatRoute: AdminSplatRoute,
   ApiAuditReviewRoute: ApiAuditReviewRoute,
+  ApiEmailVerificationRoute: ApiEmailVerificationRoute,
   BoutiqueSlugRoute: BoutiqueSlugRoute,
   ClientSplatRoute: ClientSplatRoute,
   ProduitIdRoute: ProduitIdRoute,

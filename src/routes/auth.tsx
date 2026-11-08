@@ -21,7 +21,7 @@ const signupSchema = z.object({
     .string()
     .trim()
     .refine((value) => normalizePhone(value) !== null, "Numéro malien invalide. Exemple : +223 70 00 00 00."),
-  email: z.string().trim().email("Adresse email invalide.").max(255).optional().or(z.literal("")),
+  email: z.string().trim().min(1, "Saisissez votre adresse email.").email("Adresse email invalide.").max(255),
   password: z.string().min(8, "Le mot de passe doit contenir au moins 8 caractères.").max(72),
   role: z.enum(["client", "seller"]),
   terms: z.boolean().refine((value) => value === true, "Vous devez accepter les Conditions d'utilisation et la Politique de confidentialité."),
@@ -85,7 +85,7 @@ function AuthPage() {
         const result = await signUp({
           fullName: parsed.data.fullName,
           phone: parsed.data.phone,
-          email: parsed.data.email || undefined,
+          email: parsed.data.email,
           password: parsed.data.password,
           role: parsed.data.role,
         });
@@ -209,10 +209,11 @@ function AuthPage() {
 
             {mode === "signup" && (
               <div>
-                <Label htmlFor="email">
-                  Adresse email <span className="font-normal text-muted-foreground">(facultatif)</span>
-                </Label>
-                <Input id="email" name="email" type="email" placeholder="vous@exemple.com" className="mt-1.5 h-12" maxLength={255} />
+                <Label htmlFor="email">Adresse email</Label>
+                <Input id="email" name="email" type="email" autoComplete="email" placeholder="vous@exemple.com" className="mt-1.5 h-12" maxLength={255} required />
+                <p className="mt-1.5 text-xs text-muted-foreground">
+                  Nous vous y envoyons un code pour activer votre compte.
+                </p>
               </div>
             )}
 
