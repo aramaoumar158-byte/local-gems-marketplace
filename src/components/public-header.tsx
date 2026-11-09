@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Search, ShoppingBag } from "lucide-react";
+import { Search, ShoppingBag, Users } from "lucide-react";
 import { Brand } from "@/components/brand";
 import { Button } from "@/components/ui/button";
 import { useAuth, HOME_FOR_ROLE } from "@/hooks/useAuth";
@@ -26,6 +26,12 @@ export function PublicHeader() {
             className="text-sm font-semibold text-muted-foreground hover:text-foreground"
           >
             Boutiques
+          </Link>
+          <Link
+            to="/communaute"
+            className="text-sm font-semibold text-muted-foreground hover:text-foreground"
+          >
+            Communauté
           </Link>
           <Link
             to="/auth"
@@ -78,8 +84,10 @@ export function PublicHeader() {
               </Button>
             </>
           )}
-          <Button variant="ghost" size="icon" className="lg:hidden" aria-label="Menu">
-            <Menu />
+          <Button asChild variant="ghost" size="icon" className="lg:hidden" aria-label="Communauté">
+            <Link to="/communaute">
+              <Users />
+            </Link>
           </Button>
         </div>
       </div>

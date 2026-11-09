@@ -17,7 +17,7 @@ export function checkPhoto(file: File): string | null {
 }
 
 /** Réduit la photo (1280 px max, JPEG) pour que l'envoi soit rapide même avec un réseau faible. */
-async function shrink(file: File): Promise<Blob> {
+export async function shrink(file: File): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, MAX_SIDE / Math.max(bitmap.width, bitmap.height));
   const w = Math.max(1, Math.round(bitmap.width * scale));
