@@ -36,6 +36,13 @@
       "when": 1793866342357,
       "tag": "0004_audit_ai_access_state",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794218143896,
+      "tag": "0005_email_verification_codes",
+      "breakpoints": true
     }
   ]
 }
