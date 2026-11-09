@@ -70,7 +70,7 @@ function CommunityPage() {
       setBusy(true);
       setError("");
       try {
-        const rows = await fetchPosts({ before, all: isAdmin });
+        const rows = await fetchPosts({ ...(before ? { before } : {}), all: isAdmin });
         setMore(rows.length === PAGE_SIZE);
         setPosts((prev) => (before ? [...prev, ...rows] : rows));
         if (user) {

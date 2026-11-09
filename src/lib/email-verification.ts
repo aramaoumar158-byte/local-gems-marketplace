@@ -22,7 +22,7 @@ async function call(payload: Record<string, string>): Promise<VerificationReply>
       ok: res.ok,
       status: res.status,
       message: json.message ?? (res.ok ? "" : "Une erreur est survenue. Réessayez."),
-      retryAfter: json.retryAfter,
+      ...(json.retryAfter !== undefined ? { retryAfter: json.retryAfter } : {}),
     };
   } catch {
     return { ok: false, status: 0, message: "Connexion impossible. Vérifiez votre réseau et réessayez." };

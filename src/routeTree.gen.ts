@@ -11,12 +11,12 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CommunauteRouteImport } from './routes/communaute'
 import { Route as CompteSuspenduRouteImport } from './routes/compte-suspendu'
 import { Route as ConditionsRouteImport } from './routes/conditions'
 import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as ExplorerRouteImport } from './routes/explorer'
 import { Route as VerificationRouteImport } from './routes/verification'
-import { Route as CommunauteRouteImport } from './routes/communaute'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AdminSplatRouteImport } from './routes/admin.$'
 import { Route as ApiAuditReviewRouteImport } from './routes/api/audit-review'
@@ -38,6 +38,11 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CommunauteRoute = CommunauteRouteImport.update({
+  id: '/communaute',
+  path: '/communaute',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CompteSuspenduRoute = CompteSuspenduRouteImport.update({
   id: '/compte-suspendu',
   path: '/compte-suspendu',
@@ -56,11 +61,6 @@ const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
 const ExplorerRoute = ExplorerRouteImport.update({
   id: '/explorer',
   path: '/explorer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CommunauteRoute = CommunauteRouteImport.update({
-  id: '/communaute',
-  path: '/communaute',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerificationRoute = VerificationRouteImport.update({
@@ -122,12 +122,12 @@ const SellerSplatRoute = SellerSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/communaute': typeof CommunauteRoute
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
-  '/communaute': typeof CommunauteRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/audit-review': typeof ApiAuditReviewRoute
   '/api/email-verification': typeof ApiEmailVerificationRoute
@@ -142,12 +142,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/communaute': typeof CommunauteRoute
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
-  '/communaute': typeof CommunauteRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/audit-review': typeof ApiAuditReviewRoute
   '/api/email-verification': typeof ApiEmailVerificationRoute
@@ -163,12 +163,12 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/communaute': typeof CommunauteRoute
   '/compte-suspendu': typeof CompteSuspenduRoute
   '/conditions': typeof ConditionsRoute
   '/confidentialite': typeof ConfidentialiteRoute
   '/explorer': typeof ExplorerRoute
   '/verification': typeof VerificationRoute
-  '/communaute': typeof CommunauteRoute
   '/admin/$': typeof AdminSplatRoute
   '/api/audit-review': typeof ApiAuditReviewRoute
   '/api/email-verification': typeof ApiEmailVerificationRoute
@@ -185,12 +185,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/communaute'
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
     | '/explorer'
     | '/verification'
-    | '/communaute'
     | '/admin/$'
     | '/api/audit-review'
     | '/api/email-verification'
@@ -205,12 +205,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/communaute'
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
     | '/explorer'
     | '/verification'
-    | '/communaute'
     | '/admin/$'
     | '/api/audit-review'
     | '/api/email-verification'
@@ -225,12 +225,12 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/auth'
+    | '/communaute'
     | '/compte-suspendu'
     | '/conditions'
     | '/confidentialite'
     | '/explorer'
     | '/verification'
-    | '/communaute'
     | '/admin/$'
     | '/api/audit-review'
     | '/api/email-verification'
@@ -246,12 +246,12 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRoute
+  CommunauteRoute: typeof CommunauteRoute
   CompteSuspenduRoute: typeof CompteSuspenduRoute
   ConditionsRoute: typeof ConditionsRoute
   ConfidentialiteRoute: typeof ConfidentialiteRoute
   ExplorerRoute: typeof ExplorerRoute
   VerificationRoute: typeof VerificationRoute
-  CommunauteRoute: typeof CommunauteRoute
   AdminSplatRoute: typeof AdminSplatRoute
   ApiAuditReviewRoute: typeof ApiAuditReviewRoute
   ApiEmailVerificationRoute: typeof ApiEmailVerificationRoute
@@ -280,6 +280,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/communaute': {
+      id: '/communaute'
+      path: '/communaute'
+      fullPath: '/communaute'
+      preLoaderRoute: typeof CommunauteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/compte-suspendu': {
       id: '/compte-suspendu'
       path: '/compte-suspendu'
@@ -306,13 +313,6 @@ declare module '@tanstack/react-router' {
       path: '/explorer'
       fullPath: '/explorer'
       preLoaderRoute: typeof ExplorerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/communaute': {
-      id: '/communaute'
-      path: '/communaute'
-      fullPath: '/communaute'
-      preLoaderRoute: typeof CommunauteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/verification': {
@@ -398,12 +398,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRoute,
+  CommunauteRoute: CommunauteRoute,
   CompteSuspenduRoute: CompteSuspenduRoute,
   ConditionsRoute: ConditionsRoute,
   ConfidentialiteRoute: ConfidentialiteRoute,
   ExplorerRoute: ExplorerRoute,
   VerificationRoute: VerificationRoute,
-  CommunauteRoute: CommunauteRoute,
   AdminSplatRoute: AdminSplatRoute,
   ApiAuditReviewRoute: ApiAuditReviewRoute,
   ApiEmailVerificationRoute: ApiEmailVerificationRoute,
