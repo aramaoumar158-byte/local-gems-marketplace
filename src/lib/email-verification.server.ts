@@ -83,6 +83,20 @@ async function sendEmail(to: string, code: string): Promise<void> {
       headers: { 'api-key': apiKey, 'Content-Type': 'application/json', accept: 'application/json' },
       body: JSON.stringify({ sender: { name: BRAND, email: from }, to: [{ email: to }], subject, textContent: text, htmlContent: html }),
     });
+  } else if (provider === 'mailjet') {
+    // EMAIL_API_KEY = "cle_api:cle_secrete" (les deux clés Mailjet séparées par deux-points)
+    const [pub, secret] = apiKey.split(':');
+    if (!pub || !secret) throw new EmailNotConfigured();
+    res = await fetch('https://api.mailjet.com/v3.1/send', {
+      method: 'POST',
+      headers: {
+        Authorization: `Basic ${Buffer.from(`${pub}:${secret}`).toString('base64')}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        Messages: [{ From: { Email: from, Name: BRAND }, To: [{ Email: to }], Subject: subject, TextPart: text, HTMLPart: html }],
+      }),
+    });
   } else {
     throw new EmailNotConfigured();
   }
